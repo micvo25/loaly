@@ -426,6 +426,7 @@ struct ContentView: View {
     @State var enterButtonIsPresented = false
     @State var uploadButtonIsPresented = false
     @State private var importing = false
+    @State private var isLoading = false
     
     var body: some View {
         NavigationView{
@@ -453,7 +454,7 @@ struct ContentView: View {
                                 .accentColor(.black)
                                 .padding()
                                 .onTapGesture {
-                                    DispatchQueue.main.async{
+                                    isLoading = true
                                         //song.sentence = userText
                                         song.sentenceInArray = userText.components(separatedBy: " ")
                                         //song.sentenceInArray.removeLast()
@@ -472,7 +473,7 @@ struct ContentView: View {
                                         song.vowelCount = 0
                                         
                                         self.enterButtonIsPresented = true
-                                    }
+                                    
                                 }
                         }
                         .disabled(userText.isEmpty)
@@ -509,12 +510,10 @@ struct ContentView: View {
                             .padding()
                             .onTapGesture {
                                 importing = true
-                                  
                             }
                     }
-                    .fileImporter(isPresented: $importing, allowedContentTypes: [.text, .pdf]) { (res) in
-                        
-                        DispatchQueue.main.async{
+                    .fileImporter(isPresented: $importing, allowedContentTypes: [.pdf]) { (res) in
+                            isLoading = true
                             do{
                                 let fileUrl = try res.get()
                                 print(fileUrl)
@@ -557,22 +556,39 @@ struct ContentView: View {
                             catch {
                                 print("document loading error")
                             }
-                        }
                         
                     }
                     Spacer()
                 }
-            }.onTapGesture {
+                if isLoading{
+                    LoadingView()
+                }
+            }
+            .onDisappear(){
+                isLoading = false
+            }
+            .onTapGesture {
                 UIApplication.shared.endEditing()
             }
+            
         }
+        
     }
 
 }
 
-    
-    
-
+struct LoadingView: View{
+    var body: some View{
+        ZStack{
+            Color.yellow
+                .ignoresSafeArea()
+            
+            ProgressView()
+                .progressViewStyle(.circular)
+                .scaleEffect(3)
+        }
+    }
+}
 
 
 

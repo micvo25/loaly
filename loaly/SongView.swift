@@ -41,7 +41,7 @@ func documentDirectory() -> URL {
   func playOrPause() {
     guard let player = audioPlayer else { return }
 
-    if player.isPlaying {
+      if player.isPlaying {
       player.pause()
       isPlaying = false
     } else {
@@ -75,7 +75,10 @@ struct SongView: View {
         ZStack{
                    Color.yellow
                        .ignoresSafeArea()
-                   
+                       .onAppear(){
+                           audioPlayerViewModel.loadNewFile(file: getComposition())
+                       }
+            
                    VStack(spacing: 50){
                        HStack{
                            Image("ostrich logo-02")
@@ -86,12 +89,11 @@ struct SongView: View {
                        HStack(spacing: 25){
                            Button(action: {
                                
-                               let sound = getComposition()
-                               audioPlayerViewModel.loadNewFile(file: sound)
+                               //let sound = getComposition()
                                audioPlayerViewModel.playOrPause()
                                
                            }, label: {
-                               Image(systemName: "play.fill")
+                               Image(systemName: audioPlayerViewModel.isPlaying ? "pause.fill" : "play.fill")
                                    .resizable()
                                    .scaledToFit()
                                    .frame(width: 25, height: 25)
@@ -106,9 +108,11 @@ struct SongView: View {
                        }
                        Spacer()
                    }
+                   
                    .onDisappear(){
-                       if audioPlayerViewModel.audioPlayer!.isPlaying {
-                           audioPlayerViewModel.audioPlayer!.pause()
+                       audioPlayerViewModel.loadNewFile(file: getComposition())
+                       if audioPlayerViewModel.isPlaying {
+                           audioPlayerViewModel.audioPlayer?.pause()
                            audioPlayerViewModel.isPlaying = false
                        }
                    }
