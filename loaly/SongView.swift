@@ -8,7 +8,7 @@
 import SwiftUI
 import AVFoundation
 
-
+/*
 class AudioPlayerViewModel: ObservableObject {
     
     let sound: URL
@@ -65,19 +65,16 @@ func documentDirectory() -> URL {
         }
     }
 }
-
+*/
 struct SongView: View {
     
-    @StateObject var audioPlayerViewModel = AudioPlayerViewModel()
+    var audioPlayerViewModel: AudioPlayerViewModel
     @State private var showingExporter = false
     
     var body: some View {
         ZStack{
                    Color.yellow
                        .ignoresSafeArea()
-                       .onAppear(){
-                           audioPlayerViewModel.loadNewFile(file: getComposition())
-                       }
             
                    VStack(spacing: 50){
                        HStack{
@@ -88,8 +85,6 @@ struct SongView: View {
                        }
                        HStack(spacing: 25){
                            Button(action: {
-                               
-                               //let sound = getComposition()
                                audioPlayerViewModel.playOrPause()
                                
                            }, label: {
@@ -110,7 +105,6 @@ struct SongView: View {
                    }
                    
                    .onDisappear(){
-                       audioPlayerViewModel.loadNewFile(file: getComposition())
                        if audioPlayerViewModel.isPlaying {
                            audioPlayerViewModel.audioPlayer?.pause()
                            audioPlayerViewModel.isPlaying = false
@@ -118,16 +112,14 @@ struct SongView: View {
                    }
             
                }
-}
- 
+    }
     func getComposition() -> URL {
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let composition = documentsDirectory.appendingPathComponent("LOAComposition.m4a")
         return composition
     }
-
-       }
+}
 
        #Preview {
-           SongView()
+           SongView(audioPlayerViewModel: AudioPlayerViewModel())
        }

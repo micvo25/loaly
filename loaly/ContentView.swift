@@ -407,6 +407,64 @@ extension UIApplication {
     }
 }
 
+class AudioPlayerViewModel: ObservableObject {
+    
+    let sound: URL
+    var audioPlayer: AVAudioPlayer?
+    @Published var isPlaying = false
+
+  init() {
+      sound = Bundle.main.url(forResource: "LOA(EIGHTPAUSE)", withExtension: ".mov")!
+      do {
+        audioPlayer = try AVAudioPlayer(contentsOf: sound)
+      } catch {
+          print(error.localizedDescription)
+      }
+   
+      do {
+          try AVAudioSession.sharedInstance().setCategory(.playback)
+      } catch let error {
+          print(error.localizedDescription)
+      }
+      
+  }
+
+func documentDirectory() -> URL {
+    let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    return documentsDirectory
+}
+
+  func playOrPause() {
+    guard let player = audioPlayer else { return }
+
+      if player.isPlaying {
+      player.pause()
+      isPlaying = false
+    } else {
+      player.play()
+      isPlaying = true
+    }
+      
+      do {
+          try AVAudioSession.sharedInstance().setCategory(.playback)
+      } catch let error {
+          print(error.localizedDescription)
+      }
+  }
+    
+    func loadNewFile(){
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let composition = documentsDirectory.appendingPathComponent("LOAComposition.m4a")
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: composition)
+        }
+        catch{
+            print(error.localizedDescription)
+        }
+    }
+}
+
+
 struct ContentView: View {
     
     struct OvalTextFieldStyle: TextFieldStyle {
@@ -419,6 +477,7 @@ struct ContentView: View {
         }
     }
     
+    @StateObject var audioPlayerViewModel = AudioPlayerViewModel()
     @State var song = Song()
     let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pdf], asCopy: true)
     @State var userText = ""
@@ -446,7 +505,7 @@ struct ContentView: View {
                             .padding()
                             .textFieldStyle(OvalTextFieldStyle())
                         
-                        NavigationLink(destination: SongView(), isActive: $enterButtonIsPresented){
+                        NavigationLink(destination: SongView(audioPlayerViewModel: audioPlayerViewModel), isActive: $enterButtonIsPresented){
                             Image(systemName: "arrowshape.right.circle")
                                 .resizable()
                                 .scaledToFit()
@@ -472,6 +531,8 @@ struct ContentView: View {
                                         song.letterCount = 0
                                         song.vowelCount = 0
                                         
+                                    
+                                    
                                         self.enterButtonIsPresented = true
                                     
                                 }
@@ -491,17 +552,7 @@ struct ContentView: View {
                     Spacer()
                     Text("Upload File(PDF): ")
                     Spacer()
-                    /*
-                     Button(action: {
-                     importing = true
-                     }, label: {
-                     Image(systemName: "doc.badge.arrow.up.fill")
-                     .resizable()
-                     .scaledToFit()
-                     .frame(width: 50, height: 50)
-                     .accentColor(.black)
-                     })*/
-                    NavigationLink(destination: SongView(), isActive: $uploadButtonIsPresented){
+                    NavigationLink(destination: SongView(audioPlayerViewModel: audioPlayerViewModel), isActive: $uploadButtonIsPresented){
                         Image(systemName: "doc.badge.arrow.up.fill")
                             .resizable()
                             .scaledToFit()
@@ -534,9 +585,7 @@ struct ContentView: View {
                                     
                                     song.sentence = documentContent.string //convert text to string
                                     
-                                    //song.sentence = userText
                                     song.sentenceInArray = song.sentence.components(separatedBy: " ")
-                                    //song.sentenceInArray.removeLast()
                                     if song.sentenceInArray.count > 2000{
                                         showAlert = true
                                     }
@@ -566,6 +615,7 @@ struct ContentView: View {
             }
             .onDisappear(){
                 isLoading = false
+                audioPlayerViewModel.loadNewFile()
             }
             .onTapGesture {
                 UIApplication.shared.endEditing()
@@ -574,7 +624,6 @@ struct ContentView: View {
         }
         
     }
-
 }
 
 struct LoadingView: View{
