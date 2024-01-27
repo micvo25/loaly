@@ -74,17 +74,18 @@ class Piano: PianoKeys {
 class Song: Piano{
     
     var sentence = ""
-    var sentenceInArray = [""]
+    var sentenceInArray: [String] = []
     var songArray: [URL?] = []
     var counter: Int = 0
     var vowelArrayCount: [Int] = []
+    var vowelCount = 0
+    var letterCount = 0
     var generated = false
 
     func generateSong(userSentence: [String]) {
         
         //inputArray = (userSentence.components(separatedBy: " "))
         print(userSentence)
-        var vowelCount = 0
         
         //count number of times vowels appear in text
         for i in 0..<userSentence.count{
@@ -144,17 +145,21 @@ class Song: Piano{
             vowelArrayCount.append(tempCount)
         }
         
-        print(vowelArrayCount)
+        print("This is the number of vowels in each: ", vowelArrayCount)
         
         for i in 0...vowelArrayCount.count - 1{
             vowelCount = vowelArrayCount[i] + vowelCount
         }
         
-        print(vowelCount)
+        print("This is the number of vowels: ", vowelCount)
         
         //number of words in text
-        let numberOfWords = userSentence.count
+        var numberOfWords = userSentence.count
+        if userSentence.last == "" {
+            numberOfWords = numberOfWords - 1
+        }
         
+        print("This is the number of words: ", numberOfWords)
         //if text is too long
         /*
         if numberOfWords > 2000{
@@ -182,24 +187,23 @@ class Song: Piano{
         
         print(finalArray)
         var song = String(finalArray)
-        var letterCount = 0
         
         //count number of letters in song structure
         for mChar in finalArray{
-            if mChar != "," && mChar != "." && mChar != "?" && mChar != "!"{
+            if mChar != "," && mChar != "." && mChar != "?" && mChar != "!" && mChar != "’"{
                 letterCount+=1
             }
         }
         
         var removeCount = letterCount - numberOfWords
         
-        print(song)
-        print(removeCount)
+        print("This is the song before removing letters: ", song)
+        print("This is how many letters are being removed: ", removeCount)
         
         //make song structure equal to number of vowels
         while(removeCount != 0){
             
-            if song.last! != "," && song.last! != "." && song.last! != "?" && song.last! != "!"{
+            if song.last! != "," && song.last! != "." && song.last! != "?" && song.last! != "!" && song.last! != "’"{
                 song.removeLast()
                 removeCount-=1
             }
@@ -209,7 +213,7 @@ class Song: Piano{
             
         }
         
-        print(song)
+        print("This is the final song: ", song)
         var qwertySong = String()
         var backwardSong = String()
         var halfSong = String()
@@ -397,151 +401,181 @@ class Song: Piano{
     
 }
 
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
 struct ContentView: View {
-
+    
     struct OvalTextFieldStyle: TextFieldStyle {
-            func _body(configuration: TextField<Self._Label>) -> some View {
-                configuration
-                    .padding(10)
-                    .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color.white]), startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .cornerRadius(20)
-                    .shadow(color: .gray, radius: 10)
-            }
+        func _body(configuration: TextField<Self._Label>) -> some View {
+            configuration
+                .padding(10)
+                .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color.white]), startPoint: .topLeading, endPoint: .bottomTrailing))
+                .cornerRadius(20)
+                .shadow(color: .gray, radius: 10)
         }
-        
-        let song = Song()
-        let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pdf], asCopy: true)
-        @State var userText = ""
-        @State var showAlert = false
-        @State var isPresented = false
-        @State private var importing = false
-
+    }
+    
+    @State var song = Song()
+    let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pdf], asCopy: true)
+    @State var userText = ""
+    @State var showAlert = false
+    @State var enterButtonIsPresented = false
+    @State var uploadButtonIsPresented = false
+    @State private var importing = false
+    
     var body: some View {
         NavigationView{
-                    ZStack{
-                        Color.yellow
-                            .ignoresSafeArea()
-                        VStack{
-                            HStack{
-                                Image("ostrich logo-02")
-                                    .resizable()
-                                    .frame(width: 300, height: 300)
-                                    .aspectRatio(contentMode: .fill)
-                            }
-                            HStack{
-                                Spacer()
-                                TextField("Enter a Sentence", text: $userText)
-                                    .padding()
-                                    .textFieldStyle(OvalTextFieldStyle())
-                                
-                                NavigationLink(destination: SongView(), isActive: $isPresented){
-                                    Image(systemName: "arrowshape.right.circle")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 30, height: 30)
-                                        .accentColor(.black)
-                                        .padding()
-                                        .onTapGesture {
-                                            song.sentence = userText
-                                            song.sentenceInArray = song.sentence.components(separatedBy: " ")
-                                            
-                                            if song.sentenceInArray.count > 2000{
-                                                showAlert = true
-                                            }
-                                            else{
-                                                song.generateSong(userSentence: song.sentenceInArray)
-                                                song.generated = false
-                                            }
-                                            self.isPresented = true
-                                        }
-                                }
-                                .disabled(userText.isEmpty)
-                                
-                            }.alert(isPresented: $showAlert) {
-                                Alert(
-                                    title: Text("Text is Too Long"),
-                                    message: Text("Please enter a shorter text")
-                                )
-                            }
-                            Spacer()
-                            Text("or")
-                                .font(.system(size: 50))
-                                .frame(width: 100, height: 100)
-                            Spacer()
-                            Text("Upload File(PDF): ")
-                            Spacer()
-                            /*
-                            Button(action: {
-                                importing = true
-                            }, label: {
-                                Image(systemName: "doc.badge.arrow.up.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 50, height: 50)
-                                    .accentColor(.black)
-                            })*/
-                            NavigationLink(destination: SongView(), isActive: $isPresented){
-                                Image(systemName: "doc.badge.arrow.up.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 50, height: 50)
-                                    .accentColor(.black)
-                                    .padding()
-                                    .onTapGesture {
-                                        importing = true
-                                        
-                                        if song.generated == true{
-                                            self.isPresented = true
-                                            song.generated = false
-                                        }
-                                    }
-                            }
-                            .fileImporter(isPresented: $importing, allowedContentTypes: [.text, .pdf]) { (res) in
-                                do{
-                                    let fileUrl = try res.get()
-                                    print(fileUrl)
-                                    
-                                    guard fileUrl.startAccessingSecurityScopedResource() else { return }
-                                    let contents = try  Data(contentsOf: fileUrl)
-                                    
-                                    //extract text from PDF
-                                    if let pdf = PDFDocument(url: fileUrl) {
-                                    let pageCount = pdf.pageCount
-                                    let documentContent = NSMutableAttributedString()
-
-                                    for i in 0 ..< pageCount {
-                                        guard let page = pdf.page(at: i) else { continue }
-                                        guard let pageContent = page.attributedString else { continue }
-                                            documentContent.append(pageContent)
-                                        }
-                                                    
-                                        userText = documentContent.string //convert text to string
-                                        
-                                        song.sentence = userText
-                                        song.sentenceInArray = song.sentence.components(separatedBy: " ")
+            ZStack{
+                Color.yellow
+                    .ignoresSafeArea()
+                VStack{
+                    HStack{
+                        Image("ostrich logo-02")
+                            .resizable()
+                            .frame(width: 300, height: 300)
+                            .aspectRatio(contentMode: .fill)
+                    }
+                    HStack{
+                        Spacer()
+                        TextField("Enter a Sentence", text: $userText)
+                            .padding()
+                            .textFieldStyle(OvalTextFieldStyle())
+                        
+                        NavigationLink(destination: SongView(), isActive: $enterButtonIsPresented){
+                            Image(systemName: "arrowshape.right.circle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 30, height: 30)
+                                .accentColor(.black)
+                                .padding()
+                                .onTapGesture {
+                                    DispatchQueue.main.async{
+                                        //song.sentence = userText
+                                        song.sentenceInArray = userText.components(separatedBy: " ")
+                                        //song.sentenceInArray.removeLast()
                                         
                                         if song.sentenceInArray.count > 2000{
                                             showAlert = true
                                         }
                                         else{
                                             song.generateSong(userSentence: song.sentenceInArray)
+                                            song.generated = false
                                         }
                                         
-                                        }
+                                        song.counter = 0
+                                        song.vowelArrayCount = []
+                                        song.letterCount = 0
+                                        song.vowelCount = 0
+                                        
+                                        self.enterButtonIsPresented = true
+                                    }
                                 }
-                                catch {
-                                    print("document loading error")
-                                }
-                                            
-                                
-                                }
-                            Spacer()
                         }
+                        .disabled(userText.isEmpty)
+                        
+                    }.alert(isPresented: $showAlert) {
+                        Alert(
+                            title: Text("Text is Too Long"),
+                            message: Text("Please enter a shorter text")
+                        )
                     }
+                    Spacer()
+                    Text("or")
+                        .font(.system(size: 50))
+                        .frame(width: 100, height: 100)
+                    Spacer()
+                    Text("Upload File(PDF): ")
+                    Spacer()
+                    /*
+                     Button(action: {
+                     importing = true
+                     }, label: {
+                     Image(systemName: "doc.badge.arrow.up.fill")
+                     .resizable()
+                     .scaledToFit()
+                     .frame(width: 50, height: 50)
+                     .accentColor(.black)
+                     })*/
+                    NavigationLink(destination: SongView(), isActive: $uploadButtonIsPresented){
+                        Image(systemName: "doc.badge.arrow.up.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50, height: 50)
+                            .accentColor(.black)
+                            .padding()
+                            .onTapGesture {
+                                importing = true
+                                  
+                            }
+                    }
+                    .fileImporter(isPresented: $importing, allowedContentTypes: [.text, .pdf]) { (res) in
+                        
+                        DispatchQueue.main.async{
+                            do{
+                                let fileUrl = try res.get()
+                                print(fileUrl)
+                                
+                                guard fileUrl.startAccessingSecurityScopedResource() else { return }
+                                let contents = try  Data(contentsOf: fileUrl)
+                                
+                                //extract text from PDF
+                                if let pdf = PDFDocument(url: fileUrl) {
+                                    let pageCount = pdf.pageCount
+                                    let documentContent = NSMutableAttributedString()
+                                    
+                                    for i in 0 ..< pageCount {
+                                        guard let page = pdf.page(at: i) else { continue }
+                                        guard let pageContent = page.attributedString else { continue }
+                                        documentContent.append(pageContent)
+                                    }
+                                    
+                                    song.sentence = documentContent.string //convert text to string
+                                    
+                                    //song.sentence = userText
+                                    song.sentenceInArray = song.sentence.components(separatedBy: " ")
+                                    //song.sentenceInArray.removeLast()
+                                    if song.sentenceInArray.count > 2000{
+                                        showAlert = true
+                                    }
+                                    else{
+                                        song.generateSong(userSentence: song.sentenceInArray)
+                                    }
+                                    
+                                    song.counter = 0
+                                    song.vowelArrayCount = []
+                                    song.letterCount = 0
+                                    song.vowelCount = 0
+                                    
+                                    uploadButtonIsPresented = true
+                                    
+                                }
+                            }
+                            catch {
+                                print("document loading error")
+                            }
+                        }
+                        
+                    }
+                    Spacer()
                 }
+            }.onTapGesture {
+                UIApplication.shared.endEditing()
             }
-
         }
+    }
+
+}
+
+    
+    
+
+
+
+
 
 #Preview {
     ContentView()
