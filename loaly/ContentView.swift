@@ -407,13 +407,13 @@ extension UIApplication {
     }
 }
 
-class AudioPlayerViewModel: ObservableObject {
+class AudioPlayerViewModel: ObservableObject{
     
     let sound: URL
     var audioPlayer: AVAudioPlayer?
     @Published var isPlaying = false
 
-  init() {
+    init() {
       sound = Bundle.main.url(forResource: "LOA(EIGHTPAUSE)", withExtension: ".mov")!
       do {
         audioPlayer = try AVAudioPlayer(contentsOf: sound)
@@ -433,7 +433,7 @@ func documentDirectory() -> URL {
     let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     return documentsDirectory
 }
-
+    
   func playOrPause() {
     guard let player = audioPlayer else { return }
 
@@ -504,8 +504,8 @@ struct ContentView: View {
                         TextField("Enter a Sentence", text: $userText)
                             .padding()
                             .textFieldStyle(OvalTextFieldStyle())
-                        
-                        NavigationLink(destination: SongView(audioPlayerViewModel: audioPlayerViewModel), isActive: $enterButtonIsPresented){
+                            .submitLabel(.done)
+                        NavigationLink(destination: SongView(), isActive: $enterButtonIsPresented){
                             Image(systemName: "arrowshape.right.circle")
                                 .resizable()
                                 .scaledToFit()
@@ -552,7 +552,7 @@ struct ContentView: View {
                     Spacer()
                     Text("Upload File(PDF): ")
                     Spacer()
-                    NavigationLink(destination: SongView(audioPlayerViewModel: audioPlayerViewModel), isActive: $uploadButtonIsPresented){
+                    NavigationLink(destination: SongView(), isActive: $uploadButtonIsPresented){
                         Image(systemName: "doc.badge.arrow.up.fill")
                             .resizable()
                             .scaledToFit()
@@ -622,7 +622,8 @@ struct ContentView: View {
             }
             
         }
-        
+        .environmentObject(audioPlayerViewModel)
+        .navigationViewStyle(.stack)
     }
 }
 

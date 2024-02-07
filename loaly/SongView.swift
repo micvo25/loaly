@@ -8,73 +8,36 @@
 import SwiftUI
 import AVFoundation
 
-/*
-class AudioPlayerViewModel: ObservableObject {
-    
-    let sound: URL
-    var audioPlayer: AVAudioPlayer?
-    @Published var isPlaying = false
 
-  init() {
-      let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-      self.sound = documentsDirectory.appendingPathComponent("LOAComposition.m4a")
-      let soundPath = sound.path
-      do {
-        audioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: soundPath))
-      } catch {
-          print(error.localizedDescription)
-      }
-   
-      do {
-          try AVAudioSession.sharedInstance().setCategory(.playback)
-      } catch let error {
-          print(error.localizedDescription)
-      }
-      
-  }
+struct ActivityViewController: UIViewControllerRepresentable {
+    let itemsToShare: URL
 
-func documentDirectory() -> URL {
-    let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    return documentsDirectory
+    func makeUIViewController(context: UIViewControllerRepresentableContext<ActivityViewController>) -> UIActivityViewController {
+        return UIActivityViewController(activityItems: [itemsToShare], applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: UIViewControllerRepresentableContext<ActivityViewController>) {}
 }
 
-  func playOrPause() {
-    guard let player = audioPlayer else { return }
-
-      if player.isPlaying {
-      player.pause()
-      isPlaying = false
-    } else {
-      player.play()
-      isPlaying = true
-    }
-      
-      do {
-          try AVAudioSession.sharedInstance().setCategory(.playback)
-      } catch let error {
-          print(error.localizedDescription)
-      }
-  }
-    
-    func loadNewFile(file: URL){
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf:  file)
-        }
-        catch{
-            print(error.localizedDescription)
-        }
-    }
-}
-*/
 struct SongView: View {
     
-    var audioPlayerViewModel: AudioPlayerViewModel
+    @EnvironmentObject var audioPlayerViewModel: AudioPlayerViewModel
     @State private var showingExporter = false
+    @State private var timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
+    @State var showShareSheet = false
     
     var body: some View {
         ZStack{
                    Color.yellow
                        .ignoresSafeArea()
+                       .onReceive(timer, perform: { _ in
+                           if let currentTime = audioPlayerViewModel.audioPlayer?.currentTime {
+                               // reset playValue, so reset isPlaying if needed
+                               if currentTime == TimeInterval(0.0) { // only explicitly
+                                  audioPlayerViewModel.isPlaying = false
+                               }
+                           }
+                       })
             
                    VStack(spacing: 50){
                        HStack{
@@ -94,13 +57,17 @@ struct SongView: View {
                                    .frame(width: 25, height: 25)
                                    .accentColor(.black)
                            })
-                           ShareLink(item: getComposition())
-                               .labelStyle(.iconOnly)
-                               .imageScale(.large)
-                               .accentColor(.black)
-                               .symbolVariant(.fill)
-                           
+                           Button(action: {
+                               showShareSheet = true
+                           }, label: {
+                               Image(systemName: "square.and.arrow.up.fill")
+                                   .accentColor(.black)
+                                   .imageScale(.large)
+                           })
                        }
+                       .sheet(isPresented: $showShareSheet, content: {
+                           ActivityViewController(itemsToShare: getComposition())
+                       })
                        Spacer()
                    }
                    
@@ -111,7 +78,7 @@ struct SongView: View {
                        }
                    }
             
-               }
+        }
     }
     func getComposition() -> URL {
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -121,5 +88,5 @@ struct SongView: View {
 }
 
        #Preview {
-           SongView(audioPlayerViewModel: AudioPlayerViewModel())
+           SongView()
        }

@@ -1,0 +1,56 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Enter a Sentence" : {
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inserisci Una Frase"
+          }
+        }
+      }
+    },
+    "or" : {
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "o"
+          }
+        }
+      }
+    },
+    "Please enter a shorter text" : {
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per favore inserisci un testo più breve"
+          }
+        }
+      }
+    },
+    "Text is Too Long" : {
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il Testo è Troppo Lungo "
+          }
+        }
+      }
+    },
+    "Upload File(PDF): " : {
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carica un File(PDF):"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
