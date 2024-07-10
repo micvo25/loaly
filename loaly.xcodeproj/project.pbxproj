@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		9D0C09D92B6C29B900F032F5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D0C09D82B6C29B900F032F5 /* LaunchScreen.storyboard */; };
 		9D0C09DB2B73590D00F032F5 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 9D0C09DA2B73590D00F032F5 /* Localizable.xcstrings */; };
+		9D31BE7C2C3E349600F1C423 /* MIDITestFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D31BE7B2C3E349600F1C423 /* MIDITestFile.swift */; };
 		9D82D4522B5F8B4D00E2260B /* loalyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D82D4512B5F8B4D00E2260B /* loalyApp.swift */; };
 		9D82D4542B5F8B4D00E2260B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D82D4532B5F8B4D00E2260B /* ContentView.swift */; };
 		9D82D4562B5F8B4F00E2260B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D82D4552B5F8B4F00E2260B /* Assets.xcassets */; };
@@ -68,6 +69,7 @@
 /* Begin PBXFileReference section */
 		9D0C09D82B6C29B900F032F5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9D0C09DA2B73590D00F032F5 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		9D31BE7B2C3E349600F1C423 /* MIDITestFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MIDITestFile.swift; sourceTree = "<group>"; };
 		9D82D44E2B5F8B4D00E2260B /* loaly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = loaly.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D82D4512B5F8B4D00E2260B /* loalyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = loalyApp.swift; sourceTree = "<group>"; };
 		9D82D4532B5F8B4D00E2260B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 		9D82D4452B5F8B4D00E2260B = {
 			isa = PBXGroup;
 			children = (
+				9D31BE7B2C3E349600F1C423 /* MIDITestFile.swift */,
 				9D82D4502B5F8B4D00E2260B /* loaly */,
 				9D82D4612B5F8B4F00E2260B /* loalyTests */,
 				9D82D46B2B5F8B4F00E2260B /* loalyUITests */,
@@ -393,6 +396,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D31BE7C2C3E349600F1C423 /* MIDITestFile.swift in Sources */,
 				9D82D47C2B5F8C8900E2260B /* SongView.swift in Sources */,
 				9D82D4542B5F8B4D00E2260B /* ContentView.swift in Sources */,
 				9D82D4522B5F8B4D00E2260B /* loalyApp.swift in Sources */,
