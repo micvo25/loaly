@@ -21,7 +21,8 @@ struct ActivityViewController: UIViewControllerRepresentable {
 
 struct SongView: View {
     
-    @EnvironmentObject var audioPlayerViewModel: AudioPlayerViewModel
+    //@EnvironmentObject var audioPlayerViewModel: AudioPlayerViewModel
+    @EnvironmentObject var song: Song
     @State private var showingExporter = false
     @State private var timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     @State var showShareSheet = false
@@ -30,14 +31,6 @@ struct SongView: View {
         ZStack{
                    Color.yellow
                        .ignoresSafeArea()
-                       .onReceive(timer, perform: { _ in
-                           if let currentTime = audioPlayerViewModel.audioPlayer?.currentTime {
-                               // reset playValue, so reset isPlaying if needed
-                               if currentTime == TimeInterval(0.0) { // only explicitly
-                                  audioPlayerViewModel.isPlaying = false
-                               }
-                           }
-                       })
             
                    VStack(spacing: 50){
                        HStack{
@@ -48,10 +41,20 @@ struct SongView: View {
                        }
                        HStack(spacing: 25){
                            Button(action: {
-                               audioPlayerViewModel.playOrPause()
+                               let player = MidiPlayer(song: song)
+                               player.createMusicSequence(chords: song.chords)
+                               player.prepareSong(song: song)
+                               Task{
+                               do{
+                               await player.playSong()
+                               }
+                               catch{
+                               print(error)
+                               }
+                               }
                                
                            }, label: {
-                               Image(systemName: audioPlayerViewModel.isPlaying ? "pause.fill" : "play.fill")
+                               Image(systemName: "play.fill")
                                    .resizable()
                                    .scaledToFit()
                                    .frame(width: 25, height: 25)
@@ -71,12 +74,6 @@ struct SongView: View {
                        Spacer()
                    }
                    
-                   .onDisappear(){
-                       if audioPlayerViewModel.isPlaying {
-                           audioPlayerViewModel.audioPlayer?.pause()
-                           audioPlayerViewModel.isPlaying = false
-                       }
-                   }
             
         }
     }

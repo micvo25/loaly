@@ -6,81 +6,48 @@
 //
 
 import SwiftUI
+import AudioToolbox
 import AVFoundation
 import PDFKit
 
-extension AVMutableCompositionTrack {
-    func appendToSong(url: URL) {
-        let newAsset = AVURLAsset(url: url)
-        let range = CMTimeRangeMake(start: CMTime.zero, duration: newAsset.duration)
-        let end = timeRange.end
-        if let track = newAsset.tracks(withMediaType: AVMediaType.audio).first {
-            try! insertTimeRange(range, of: track, at: end)
-        }  else{
-            print("ERROR - Appending")
-        }
-        }
+extension String {
+    public subscript(_ idx: Int) -> Character {
+        self[self.index(self.startIndex, offsetBy: idx)]
+    }
 }
 
-class PianoKeys{
-    
-    let AKey = Bundle.main.url(forResource: "A-Updated", withExtension: "mov")
-    let BKey = Bundle.main.url(forResource: "B-Updated", withExtension: "mov")
-    let CKey = Bundle.main.url(forResource: "C-Updated", withExtension: "mov")
-    let DKey = Bundle.main.url(forResource: "D-Updated", withExtension: "mov")
-    let EKey = Bundle.main.url(forResource: "E-Updated", withExtension: "mov")
-    let FKey = Bundle.main.url(forResource: "F-Updated", withExtension: "mov")
-    let GKey = Bundle.main.url(forResource: "G-Updated", withExtension: "mov")
-    let HKey = Bundle.main.url(forResource: "H-Updated", withExtension: "mov")
-    let IKey = Bundle.main.url(forResource: "I-Updated", withExtension: "mov")
-    let JKey = Bundle.main.url(forResource: "J-Updated", withExtension: "mov")
-    let KKey = Bundle.main.url(forResource: "K-Updated", withExtension: "mov")
-    let LKey = Bundle.main.url(forResource: "L-Updated", withExtension: "mov")
-    let MKey = Bundle.main.url(forResource: "M-Updated", withExtension: "mov")
-    let NKey = Bundle.main.url(forResource: "N-Updated", withExtension: "mov")
-    let OKey = Bundle.main.url(forResource: "O-Updated", withExtension: "mov")
-    let PKey = Bundle.main.url(forResource: "P-Updated", withExtension: "mov")
-    let QKey = Bundle.main.url(forResource: "Q-Updated", withExtension: "mov")
-    let RKey = Bundle.main.url(forResource: "R-Updated", withExtension: "mov")
-    let SKey = Bundle.main.url(forResource: "S-Updated", withExtension: "mov")
-    let TKey = Bundle.main.url(forResource: "T-Updated", withExtension: "mov")
-    let UKey = Bundle.main.url(forResource: "U-Updated", withExtension: "mov")
-    let VKey = Bundle.main.url(forResource: "V-Updated", withExtension: "mov")
-    let WKey = Bundle.main.url(forResource: "W-Updated", withExtension: "mov")
-    let XKey = Bundle.main.url(forResource: "X-Updated", withExtension: "mov")
-    let YKey = Bundle.main.url(forResource: "Y-Updated", withExtension: "mov")
-    let ZKey = Bundle.main.url(forResource: "Z-Updated", withExtension: "mov")
-    let quarterPause = Bundle.main.url(forResource: "LOA(QUARTERPAUSE)", withExtension: "mov")
-    let eightPause = Bundle.main.url(forResource: "LOA(EIGHTPAUSE)", withExtension: "mov")
 
-}
-
-class Piano: PianoKeys {
+class Pianos {
     
-    var alphabetPiano: [String: URL?] = [:]
+    let alphabetPiano: [Character:UInt8] = ["A":33,"a":33,"B":35,"b":35,"C":36,"c":36,"D":38,"d":38,"E":40,"e":40,"F":41,"f":41,"G":43,"g":43,"H":45,"h":45,"I":47,"i":47,"J":48,"j":48,"K":50,"k":50,"L":52,"l":52,"M":53,"m":53,"N":55,"n":55,"O":57,"o":57,"P":59,"p":59,"Q":60,"q":60,"R":62,"r":62,"S":64,"s":64,"T":65,"t":65,"U":67,"u":67,"V":69,"v":69,"W":71,"w":71,"X":72,"x":72,"Y":74,"y":74,"Z":76,"z":76]
     let qwertyPiano = ["A":"Q","a": "q","B":"W","b":"w","C":"E","c":"e","D":"R","d":"r","E":"T","e":"t","F":"Y","f":"y","G":"U","g":"u","H":"I","h":"i","I":"O","i":"o","J":"P","j":"p","K":"A","k":"a","L":"S","l":"s","M":"D","m":"d","N":"F","n":"f","O":"G","o":"g","P":"H","p":"h","Q":"J","q":"j","R":"K","r":"k","S":"L","s":"l","T":"Z","t":"z","U":"X","u":"x","V":"C","v":"c","W":"V","w":"v","X":"B","x":"b","Y":"N","y":"n","Z":"M","z":"m", ",":",", ".":".","!":"!","?":"?", "_":"_"]
     let backwardPiano = ["A":"Z","a":"z","B":"Y","b":"y","C":"X","c":"x","D":"W","d":"w","E":"V","e":"v","F":"U","f":"u","G":"T","g":"t","H":"S","h":"s","I":"R","i":"r","J":"Q","j":"q","K":"P","k":"p","L":"O","l":"o","M":"N","m":"n","N":"M","n":"m","O":"L","o":"l","P":"K","p":"k","Q":"J","q":"j","R":"I","r":"i","S":"H","s":"h","T":"G","t":"g","U":"F","u":"f","V":"E","v":"e","W":"D","w":"d","X":"C","x":"c","Y":"B","y":"b","Z":"A","z":"a",",":",",".":".","!":"!","?":"?"," ":" ","_":"_"]
     let halfPiano = ["A":"N","a":"n","B":"O","b":"o","C":"P","c":"p","D":"Q","d":"q","E":"R","e":"r","F":"S","f":"s","G":"T","g":"t","H":"U","h":"u","I":"V","i":"v","J":"W","j":"w","K":"X","k":"x","L":"Y","l":"y","M":"Z","m":"z","N":"A","n":"a","O":"B","o":"b","P":"C","p":"c","Q":"D","q":"d","R":"E","r":"e","S":"F","s":"f","T":"G","t":"g","U":"H","u":"h","V":"I","v":"i","W":"J","w":"j","X":"K","x":"k","Y":"L","y":"l","Z":"M","z":"m",",":",",".":".","!":"!","?":"?"," ":" ","_":"_"]
     
-    override init(){
-        
-        super.init()
-        self.alphabetPiano = ["A":AKey,"a":AKey,"B":BKey,"b":BKey,"C":CKey,"c":CKey,"D":DKey,"d":DKey,"E":EKey,"e":EKey,"F":FKey,"f":FKey,"G":GKey,"g":GKey,"H":HKey,"h":HKey,"I":IKey,"i":IKey,"J":JKey,"j":JKey,"K":KKey,"k":KKey,"L":LKey,"l":LKey,"M":MKey,"m":MKey,"N":NKey,"n":NKey,"O":OKey,"o":OKey,"P":PKey,"p":PKey,"Q":QKey,"q":QKey,"R":RKey,"r":RKey,"S":SKey,"s":SKey,"T":TKey,"t":TKey,"U":UKey,"u":UKey,"V":VKey,"v":VKey,"W":WKey,"w":WKey,"X":XKey,"x":XKey,"Y":YKey,"y":YKey,"Z":ZKey,"z":ZKey,",":eightPause,".":eightPause,"!":quarterPause,"?":quarterPause, "_":eightPause]
-        
-    }
-    
 }
 
-class Song: Piano{
+
+class Song: Pianos, ObservableObject {
     
+    var musicSequence: MusicSequence?
+    var tracks: [Int: MusicTrack] = [:]
     var sentence = ""
     var sentenceInArray: [String] = []
     var songArray: [URL?] = []
     var counter: Int = 0
-    var vowelArrayCount: [Int] = []
-    var vowelCount = 0
+    var vowelsInEachWord: [Int] = []
+    var totalVowelCount = 0
     var letterCount = 0
     var generated = false
+    var chords: [[UInt8]] = [[]]
+    
+    override init() {
+        guard NewMusicSequence(&musicSequence) == OSStatus(noErr) else {
+            fatalError("Cannot create MusicSequence")
+        }
+    }
+    
+    
 
     func generateSong(userSentence: [String]) {
         
@@ -130,28 +97,28 @@ class Song: Piano{
                 tempCount+=1
             }
             if temp.contains("."){
-                vowelArrayCount.append(0)
+                vowelsInEachWord.append(0)
             }
             if temp.contains(","){
-                vowelArrayCount.append(0)
+                vowelsInEachWord.append(0)
             }
             if temp.contains("?"){
-                vowelArrayCount.append(0)
+                vowelsInEachWord.append(0)
             }
             if temp.contains("!"){
-                vowelArrayCount.append(0)
+                vowelsInEachWord.append(0)
             }
             
-            vowelArrayCount.append(tempCount)
+            vowelsInEachWord.append(tempCount)
         }
         
-        print("This is the number of vowels in each: ", vowelArrayCount)
+        print("This is the number of vowels in each word: ", vowelsInEachWord)
         
-        for i in 0...vowelArrayCount.count - 1{
-            vowelCount = vowelArrayCount[i] + vowelCount
+        for i in 0...vowelsInEachWord.count - 1{
+            totalVowelCount = vowelsInEachWord[i] + totalVowelCount
         }
         
-        print("This is the number of vowels: ", vowelCount)
+        print("This is the total number of vowels: ", totalVowelCount)
         
         //number of words in text
         var numberOfWords = userSentence.count
@@ -162,18 +129,18 @@ class Song: Piano{
         print("This is the number of words: ", numberOfWords)
         //if text is too long
         /*
-        if numberOfWords > 2000{
-            
-            
-            let alert = UIAlertController(title: "Error", message: "Text is too long", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
-            //self.present(alert, animated: true, completion: nil)
-            
-            return
-        }
+         if numberOfWords > 2000{
+         
+         
+         let alert = UIAlertController(title: "Error", message: "Text is too long", preferredStyle: .alert)
+         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+         //self.present(alert, animated: true, completion: nil)
+         
+         return
+         }
          */
         
-        var finalArray: [Character] = []
+        var inputInCharacters: [Character] = []
         
         //create song structure based on chosen letters
         for i in 0..<userSentence.count{
@@ -181,15 +148,17 @@ class Song: Piano{
             let temp = userSentence[i]
             
             for mChar in temp{
-                finalArray.append(mChar)
+                inputInCharacters.append(mChar)
             }
         }
         
-        print(finalArray)
-        var song = String(finalArray)
+        print(inputInCharacters)
+        
+        //combine input into one string
+        var song = String(inputInCharacters)
         
         //count number of letters in song structure
-        for mChar in finalArray{
+        for mChar in inputInCharacters{
             if mChar != "," && mChar != "." && mChar != "?" && mChar != "!" && mChar != "’"{
                 letterCount+=1
             }
@@ -229,7 +198,7 @@ class Song: Piano{
             else{}
             
             if backwardPiano[String(mChar)] != nil{
-                if vowelArrayCount[i] > 1{
+                if vowelsInEachWord[i] > 1{
                     backwardSong.append(backwardPiano[String(mChar)]!)
                 }
                 else{
@@ -239,7 +208,7 @@ class Song: Piano{
             else{}
             
             if halfPiano[String(mChar)] != nil{
-                if vowelArrayCount[i] > 2{
+                if vowelsInEachWord[i] > 2{
                     halfSong.append(halfPiano[String(mChar)]!)
                 }
                 else{
@@ -253,113 +222,22 @@ class Song: Piano{
         print(backwardSong)
         print(halfSong)
         
-        //create compositions
-        let qwertyComposition = AVMutableComposition()
-        let qwertyCompositionAudioTrack = qwertyComposition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: kCMPersistentTrackID_Invalid)
-        let backwardComposition = AVMutableComposition()
-        let backwardCompositionAudioTrack = backwardComposition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: kCMPersistentTrackID_Invalid)
-        let halfComposition = AVMutableComposition()
-        let halfCompositionAudioTrack = halfComposition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: kCMPersistentTrackID_Invalid)
-
-        for mChar in qwertySong{
+        chords.append([UInt8(qwertySong.count), 3])
+        
+        for i in 0..<qwertySong.count{
             
-            let letter = String(mChar)
+            chords[i].append(alphabetPiano[qwertySong[i]]!)
             
-            if alphabetPiano[letter] != nil {
-                qwertyCompositionAudioTrack!.appendToSong(url: alphabetPiano[letter]!! )
+            if backwardSong[i] != "_"{
+                chords[i].append(alphabetPiano[backwardSong[i]]!)
             }
-            else{
-                qwertyCompositionAudioTrack!.appendToSong(url: alphabetPiano["_"]!! )
+            if halfSong[i] != "_"{
+                chords[i].append(alphabetPiano[halfSong[i]]!)
             }
         }
         
-        for mChar in backwardSong{
-            
-            let letter = String(mChar)
-            
-            if alphabetPiano[letter] != nil {
-                backwardCompositionAudioTrack!.appendToSong(url: alphabetPiano[letter]!! )
-            }
-            else{
-                backwardCompositionAudioTrack!.appendToSong(url: alphabetPiano["_"]!! )
-            }
-            
-        }
+        print(chords)
         
-        for mChar in halfSong{
-            
-            let letter = String(mChar)
-            
-            if alphabetPiano[letter] != nil {
-                halfCompositionAudioTrack!.appendToSong(url: alphabetPiano[letter]!! )
-            }
-            else{
-                halfCompositionAudioTrack!.appendToSong(url: alphabetPiano["_"]!! )
-            }
-            
-        }
-        
-        //export qwerty song
-        var documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as NSURL
-        let qwertyURL = documentDirectoryURL.appendingPathComponent("LOAComposition.m4a")
-        exportURL(destinationURL: qwertyURL!, composition: qwertyComposition)
-        
-        
-        //export backward song (UNCOMMENT THIS)
-        documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as NSURL
-        let backwardURL = documentDirectoryURL.appendingPathComponent("backwardComposition.m4a")
-        exportURL(destinationURL: backwardURL!, composition: backwardComposition)
-        
-         
-       
-        //export half song
-        documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as NSURL
-        let halfURL = documentDirectoryURL.appendingPathComponent("halfComposition.m4a")
-        exportURL(destinationURL: halfURL!, composition: halfComposition)
-         
-        
-        
-        //let audioFileUrls = [qwertyURL, backwardURL, halfURL]
-        //await mergeAudioFiles(audioFileUrls: audioFileUrls)
-        generated = true
-    }
-    
-    
-    //export function
-    func exportURL(destinationURL: URL, composition: AVMutableComposition) {
-                
-        do { // delete old video
-            try FileManager.default.removeItem(at: destinationURL)
-            } catch { print(error.localizedDescription) }
-        
-        //exporting to file
-        if let assetExport = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetAppleM4A) {
-            //assetExport.audioMix = audioMix
-          assetExport.outputFileType = AVFileType.m4a
-            assetExport.outputURL = destinationURL
-            
-            assetExport.exportAsynchronously( completionHandler:    {
-                
-                switch assetExport.status {
-                    
-                case AVAssetExportSession.Status.failed:
-                    print("failed \(assetExport.error)")
-                case AVAssetExportSession.Status.cancelled:
-                    print("cancelled \(assetExport.error)")
-                case AVAssetExportSession.Status.unknown:
-                    print("unknown\(assetExport.error)")
-                case AVAssetExportSession.Status.waiting:
-                    print("waiting\(assetExport.error)")
-                case AVAssetExportSession.Status.exporting:
-                    print("exporting\(assetExport.error)")
-                    
-                default:
-                    print("COMPLETED YAY!!!")
-                    print(destinationURL)
-                }
-                
-            })
-        }//asset export end
     }
     
     //after user upload, generate song
@@ -399,6 +277,113 @@ class Song: Piano{
         print(text)
     }
     
+    
+}
+
+class MidiPlayer {
+    var midiPlayer: AVMIDIPlayer?
+    var bankURL: URL
+    var song: Song
+    
+    init(song: Song) {
+        
+        guard let bankURL = Bundle.main.url(forResource: "FluidR3_GM2-2", withExtension: "SF2") else {
+            fatalError("\"Steinway Model L Grand Piano.sf2\" file not found.")
+        }
+        self.bankURL = bankURL
+        self.song = song
+    }
+    
+    func generateMIDIFile(song: Song){
+                
+        var documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as NSURL
+        let qwertyURL = documentDirectoryURL.appendingPathComponent("mySong.m4a")
+        
+        guard MusicSequenceFileCreate(song.musicSequence!, qwertyURL! as CFURL, MusicSequenceFileTypeID.midiType, MusicSequenceFileFlags.eraseFile, 0) == OSStatus(noErr) else{
+            fatalError("Cannot create midi file")
+        }
+        
+    }
+    
+    func prepareSong(song: Song){
+        var data: Unmanaged<CFData>?
+        guard MusicSequenceFileCreateData(song.musicSequence!, MusicSequenceFileTypeID.midiType, MusicSequenceFileFlags.eraseFile, 480, &data) == OSStatus(noErr) else {
+            fatalError("Cannot create music midi data")
+        }
+        
+        if let md = data {
+            let midiData = md.takeUnretainedValue() as Data
+            do {
+                errno = 0
+                try self.midiPlayer = AVMIDIPlayer(data: midiData, soundBankURL: self.bankURL)
+            } catch let error {
+                fatalError(error.localizedDescription)
+            }
+        }
+        self.midiPlayer!.prepareToPlay()
+    }
+    
+    func playSong() async {
+        if let md = self.midiPlayer {
+            md.currentPosition = 0
+            await md.play()
+        }
+    }
+    
+    func createMusicSequence(chords: [[UInt8]] )  {
+
+        
+        //var musicSequence: MusicSequence?
+        var status = NewMusicSequence(&song.musicSequence)
+        if status != noErr {
+            print(" bad status \(status) creating sequence")
+        }
+        
+        var tempoTrack: MusicTrack?
+        if MusicSequenceGetTempoTrack(song.musicSequence!, &tempoTrack) != noErr {
+            assert(tempoTrack != nil, "Cannot get tempo track")
+        }
+
+        //MusicTrackClear(tempoTrack, 0, 1)
+        if MusicTrackNewExtendedTempoEvent(tempoTrack!, 0.0, 256.0) != noErr {
+            print("could not set tempo")
+        }
+        if MusicTrackNewExtendedTempoEvent(tempoTrack!, 4.0, 256.0) != noErr {
+            print("could not set tempo")
+        }
+        
+        
+        // add a track
+        var track: MusicTrack?
+        status = MusicSequenceNewTrack(song.musicSequence!, &track)
+        if status != noErr {
+            print("error creating track \(status)")
+        }
+        
+      
+        
+        // make some notes and put them on the track
+        var beat: MusicTimeStamp = 0.0
+       
+        for batch in 0..<chords.count {
+            for note: UInt8 in chords[batch] {
+                var mess = MIDINoteMessage(channel: 0,
+                                           note: note,
+                                           velocity: 64,
+                                           releaseVelocity: 0,
+                                           duration: 1.0 )
+                status = MusicTrackNewMIDINoteEvent(track!, beat, &mess)
+                if status != noErr {    print("creating new midi note event \(status)") }
+                
+            }// beat changes after this
+            beat += 1
+        }
+        
+        CAShow(UnsafeMutablePointer<MusicSequence>(song.musicSequence!))
+        
+    }
+    
+    
 }
 
 extension UIApplication {
@@ -407,62 +392,6 @@ extension UIApplication {
     }
 }
 
-class AudioPlayerViewModel: ObservableObject{
-    
-    let sound: URL
-    var audioPlayer: AVAudioPlayer?
-    @Published var isPlaying = false
-
-    init() {
-      sound = Bundle.main.url(forResource: "LOA(EIGHTPAUSE)", withExtension: ".mov")!
-      do {
-        audioPlayer = try AVAudioPlayer(contentsOf: sound)
-      } catch {
-          print(error.localizedDescription)
-      }
-   
-      do {
-          try AVAudioSession.sharedInstance().setCategory(.playback)
-      } catch let error {
-          print(error.localizedDescription)
-      }
-      
-  }
-
-func documentDirectory() -> URL {
-    let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    return documentsDirectory
-}
-    
-  func playOrPause() {
-    guard let player = audioPlayer else { return }
-
-      if player.isPlaying {
-      player.pause()
-      isPlaying = false
-    } else {
-      player.play()
-      isPlaying = true
-    }
-      
-      do {
-          try AVAudioSession.sharedInstance().setCategory(.playback)
-      } catch let error {
-          print(error.localizedDescription)
-      }
-  }
-    
-    func loadNewFile(){
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let composition = documentsDirectory.appendingPathComponent("LOAComposition.m4a")
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: composition)
-        }
-        catch{
-            print(error.localizedDescription)
-        }
-    }
-}
 
 
 struct ContentView: View {
@@ -477,8 +406,7 @@ struct ContentView: View {
         }
     }
     
-    @StateObject var audioPlayerViewModel = AudioPlayerViewModel()
-    @State var song = Song()
+   
     let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pdf], asCopy: true)
     @State var userText = ""
     @State var showAlert = false
@@ -486,6 +414,7 @@ struct ContentView: View {
     @State var uploadButtonIsPresented = false
     @State private var importing = false
     @State private var isLoading = false
+    @StateObject var song = Song()
     
     var body: some View {
         NavigationView{
@@ -527,9 +456,9 @@ struct ContentView: View {
                                         }
                                         
                                         song.counter = 0
-                                        song.vowelArrayCount = []
+                                        song.vowelsInEachWord = []
                                         song.letterCount = 0
-                                        song.vowelCount = 0
+                                        song.totalVowelCount = 0
                                         
                                     
                                     
@@ -594,9 +523,9 @@ struct ContentView: View {
                                     }
                                     
                                     song.counter = 0
-                                    song.vowelArrayCount = []
+                                    song.vowelsInEachWord = []
                                     song.letterCount = 0
-                                    song.vowelCount = 0
+                                    song.totalVowelCount = 0
                                     
                                     uploadButtonIsPresented = true
                                     
@@ -615,14 +544,12 @@ struct ContentView: View {
             }
             .onDisappear(){
                 isLoading = false
-                audioPlayerViewModel.loadNewFile()
             }
             .onTapGesture {
                 UIApplication.shared.endEditing()
             }
             
         }
-        .environmentObject(audioPlayerViewModel)
         .navigationViewStyle(.stack)
     }
 }
