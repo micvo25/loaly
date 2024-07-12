@@ -10,6 +10,7 @@
 		9D0C09D92B6C29B900F032F5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D0C09D82B6C29B900F032F5 /* LaunchScreen.storyboard */; };
 		9D0C09DB2B73590D00F032F5 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 9D0C09DA2B73590D00F032F5 /* Localizable.xcstrings */; };
 		9D31BE7C2C3E349600F1C423 /* MIDITestFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D31BE7B2C3E349600F1C423 /* MIDITestFile.swift */; };
+		9D31BE7E2C40E2B700F1C423 /* FluidR3_GM2-2.SF2 in Resources */ = {isa = PBXBuildFile; fileRef = 9D31BE7D2C40E2B700F1C423 /* FluidR3_GM2-2.SF2 */; };
 		9D82D4522B5F8B4D00E2260B /* loalyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D82D4512B5F8B4D00E2260B /* loalyApp.swift */; };
 		9D82D4542B5F8B4D00E2260B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D82D4532B5F8B4D00E2260B /* ContentView.swift */; };
 		9D82D4562B5F8B4F00E2260B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D82D4552B5F8B4F00E2260B /* Assets.xcassets */; };
@@ -70,6 +71,7 @@
 		9D0C09D82B6C29B900F032F5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9D0C09DA2B73590D00F032F5 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		9D31BE7B2C3E349600F1C423 /* MIDITestFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MIDITestFile.swift; sourceTree = "<group>"; };
+		9D31BE7D2C40E2B700F1C423 /* FluidR3_GM2-2.SF2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FluidR3_GM2-2.SF2"; sourceTree = "<group>"; };
 		9D82D44E2B5F8B4D00E2260B /* loaly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = loaly.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D82D4512B5F8B4D00E2260B /* loalyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = loalyApp.swift; sourceTree = "<group>"; };
 		9D82D4532B5F8B4D00E2260B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 				9D0C09D82B6C29B900F032F5 /* LaunchScreen.storyboard */,
 				9D82D4532B5F8B4D00E2260B /* ContentView.swift */,
 				9D82D47B2B5F8C8900E2260B /* SongView.swift */,
+				9D31BE7D2C40E2B700F1C423 /* FluidR3_GM2-2.SF2 */,
 				9D82D4552B5F8B4F00E2260B /* Assets.xcassets */,
 				9D82D4B62B60DD8900E2260B /* Assets.xcassets */,
 				9D82D4572B5F8B4F00E2260B /* Preview Content */,
@@ -354,6 +357,7 @@
 				9D82D4A32B5F8D4600E2260B /* S-Updated.mov in Resources */,
 				9D82D4B32B5F8D4600E2260B /* D-Updated.mov in Resources */,
 				9D82D4A72B5F8D4600E2260B /* V-Updated.mov in Resources */,
+				9D31BE7E2C40E2B700F1C423 /* FluidR3_GM2-2.SF2 in Resources */,
 				9D82D4AB2B5F8D4600E2260B /* X-Updated.mov in Resources */,
 				9D82D4562B5F8B4F00E2260B /* Assets.xcassets in Resources */,
 				9D82D49C2B5F8D4600E2260B /* C-Updated.mov in Resources */,

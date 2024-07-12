@@ -16,10 +16,11 @@ extension String {
     }
 }
 
-
 class Pianos {
     
-    let alphabetPiano: [Character:UInt8] = ["A":33,"a":33,"B":35,"b":35,"C":36,"c":36,"D":38,"d":38,"E":40,"e":40,"F":41,"f":41,"G":43,"g":43,"H":45,"h":45,"I":47,"i":47,"J":48,"j":48,"K":50,"k":50,"L":52,"l":52,"M":53,"m":53,"N":55,"n":55,"O":57,"o":57,"P":59,"p":59,"Q":60,"q":60,"R":62,"r":62,"S":64,"s":64,"T":65,"t":65,"U":67,"u":67,"V":69,"v":69,"W":71,"w":71,"X":72,"x":72,"Y":74,"y":74,"Z":76,"z":76]
+    let alphabet = ["A","a","B","b","C","c","D","d","E","e","F","f","G","g","H","h","I","i","J","j","K","k","L","l","M","m","N","n","O","o","P","p","Q","q","R","r","S","s","T","t","U","u","V","v","W","w","X","x","Y","y","Z","z"]
+    let alphabetPiano: [Character:UInt8] = ["A":33,"a":33,"B":35,"b":35,"C":36,"c":36,"D":38,"d":38,"E":40,"e":40,"F":41,"f":41,"G":43,"g":43,"H":45,"h":45,"I":47,"i":47,"J":48,"j":48,"K":50,"k":50,"L":52,"l":52,"M":53,"m":53,"N":55,"n":55,"O":57,"o":57,"P":59,"p":59,"Q":60,"q":60,"R":62,"r":62,"S":64,"s":64,"T":65,"t":65,"U":67,"u":67,"V":69,"v":69,"W":71,"w":71,"X":72,"x":72,"Y":74,"y":74,"Z":76,"z":76, "!":0,",":0,".":0,"?":0]
+    //let alphabetPiano: [Character:UInt8] = ["A":34,"a":43,"B":37,"b":45,"C":39,"c":47,"D":42,"d":48,"E":44,"e":50,"F":46,"f":52,"G":49,"g":53,"H":51,"h":55,"I":54,"i":57,"J":56,"j":59,"K":58,"k":60,"L":61,"l":62,"M":63,"m":64,"N":66,"n":65,"O":68,"o":67,"P":70,"p":69,"Q":73,"q":71,"R":75,"r":72,"S":78,"s":74,"T":80,"t":76,"U":82,"u":77,"V":85,"v":79,"W":87,"w":81,"X":90,"x":83,"Y":92,"y":84,"Z":94,"z":86, "!":0,",":0,".":0,"?":0]
     let qwertyPiano = ["A":"Q","a": "q","B":"W","b":"w","C":"E","c":"e","D":"R","d":"r","E":"T","e":"t","F":"Y","f":"y","G":"U","g":"u","H":"I","h":"i","I":"O","i":"o","J":"P","j":"p","K":"A","k":"a","L":"S","l":"s","M":"D","m":"d","N":"F","n":"f","O":"G","o":"g","P":"H","p":"h","Q":"J","q":"j","R":"K","r":"k","S":"L","s":"l","T":"Z","t":"z","U":"X","u":"x","V":"C","v":"c","W":"V","w":"v","X":"B","x":"b","Y":"N","y":"n","Z":"M","z":"m", ",":",", ".":".","!":"!","?":"?", "_":"_"]
     let backwardPiano = ["A":"Z","a":"z","B":"Y","b":"y","C":"X","c":"x","D":"W","d":"w","E":"V","e":"v","F":"U","f":"u","G":"T","g":"t","H":"S","h":"s","I":"R","i":"r","J":"Q","j":"q","K":"P","k":"p","L":"O","l":"o","M":"N","m":"n","N":"M","n":"m","O":"L","o":"l","P":"K","p":"k","Q":"J","q":"j","R":"I","r":"i","S":"H","s":"h","T":"G","t":"g","U":"F","u":"f","V":"E","v":"e","W":"D","w":"d","X":"C","x":"c","Y":"B","y":"b","Z":"A","z":"a",",":",",".":".","!":"!","?":"?"," ":" ","_":"_"]
     let halfPiano = ["A":"N","a":"n","B":"O","b":"o","C":"P","c":"p","D":"Q","d":"q","E":"R","e":"r","F":"S","f":"s","G":"T","g":"t","H":"U","h":"u","I":"V","i":"v","J":"W","j":"w","K":"X","k":"x","L":"Y","l":"y","M":"Z","m":"z","N":"A","n":"a","O":"B","o":"b","P":"C","p":"c","Q":"D","q":"d","R":"E","r":"e","S":"F","s":"f","T":"G","t":"g","U":"H","u":"h","V":"I","v":"i","W":"J","w":"j","X":"K","x":"k","Y":"L","y":"l","Z":"M","z":"m",",":",",".":".","!":"!","?":"?"," ":" ","_":"_"]
@@ -35,11 +36,9 @@ class Song: Pianos, ObservableObject {
     var sentenceInArray: [String] = []
     var songArray: [URL?] = []
     var counter: Int = 0
-    var vowelsInEachWord: [Int] = []
-    var totalVowelCount = 0
-    var letterCount = 0
+   
     var generated = false
-    var chords: [[UInt8]] = [[]]
+    
     
     override init() {
         guard NewMusicSequence(&musicSequence) == OSStatus(noErr) else {
@@ -53,6 +52,9 @@ class Song: Pianos, ObservableObject {
         
         //inputArray = (userSentence.components(separatedBy: " "))
         print(userSentence)
+        var vowelsInEachWord: [Int] = []
+        var totalVowelCount = 0
+        var letterCount = 0
         
         //count number of times vowels appear in text
         for i in 0..<userSentence.count{
@@ -96,18 +98,6 @@ class Song: Pianos, ObservableObject {
             if temp.contains("y"){
                 tempCount+=1
             }
-            if temp.contains("."){
-                vowelsInEachWord.append(0)
-            }
-            if temp.contains(","){
-                vowelsInEachWord.append(0)
-            }
-            if temp.contains("?"){
-                vowelsInEachWord.append(0)
-            }
-            if temp.contains("!"){
-                vowelsInEachWord.append(0)
-            }
             
             vowelsInEachWord.append(tempCount)
         }
@@ -127,19 +117,7 @@ class Song: Pianos, ObservableObject {
         }
         
         print("This is the number of words: ", numberOfWords)
-        //if text is too long
-        /*
-         if numberOfWords > 2000{
-         
-         
-         let alert = UIAlertController(title: "Error", message: "Text is too long", preferredStyle: .alert)
-         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
-         //self.present(alert, animated: true, completion: nil)
-         
-         return
-         }
-         */
-        
+       
         var inputInCharacters: [Character] = []
         
         //create song structure based on chosen letters
@@ -148,7 +126,9 @@ class Song: Pianos, ObservableObject {
             let temp = userSentence[i]
             
             for mChar in temp{
-                inputInCharacters.append(mChar)
+                if alphabet.contains(String(mChar)){
+                    inputInCharacters.append(mChar)
+                }
             }
         }
         
@@ -222,22 +202,25 @@ class Song: Pianos, ObservableObject {
         print(backwardSong)
         print(halfSong)
         
-        chords.append([UInt8(qwertySong.count), 3])
+        var chords = [[UInt8]](repeating: [UInt8](repeating: 0, count: 0), count: qwertySong.count)
+        print(chords)
         
         for i in 0..<qwertySong.count{
             
-            chords[i].append(alphabetPiano[qwertySong[i]]!)
-            
-            if backwardSong[i] != "_"{
+            if qwertySong[i] != "!" && qwertySong[i] != "?" && qwertySong[i] != "." && qwertySong[i] != ","{
+                chords[i].append(alphabetPiano[qwertySong[i]]!)
+            }
+            if backwardSong[i] != "_" && backwardSong[i] != "!" && backwardSong[i] != "?" && backwardSong[i] != "." && backwardSong[i] != ","{
                 chords[i].append(alphabetPiano[backwardSong[i]]!)
             }
-            if halfSong[i] != "_"{
+            if halfSong[i] != "_" && halfSong[i] != "!" && halfSong[i] != "?" && halfSong[i] != "." && halfSong[i] != ","{
                 chords[i].append(alphabetPiano[halfSong[i]]!)
             }
         }
         
         print(chords)
         
+        createMusicSequence(chords: chords)
     }
     
     //after user upload, generate song
@@ -277,21 +260,72 @@ class Song: Pianos, ObservableObject {
         print(text)
     }
     
+    func createMusicSequence(chords: [[UInt8]] )  {
+
+        
+        //var musicSequence: MusicSequence?
+        var status = NewMusicSequence(&musicSequence)
+        if status != noErr {
+            print(" bad status \(status) creating sequence")
+        }
+        
+        var tempoTrack: MusicTrack?
+        if MusicSequenceGetTempoTrack(musicSequence!, &tempoTrack) != noErr {
+            assert(tempoTrack != nil, "Cannot get tempo track")
+        }
+
+        //MusicTrackClear(tempoTrack, 0, 1)
+        if MusicTrackNewExtendedTempoEvent(tempoTrack!, 0.0, 256.0) != noErr {
+            print("could not set tempo")
+        }
+        if MusicTrackNewExtendedTempoEvent(tempoTrack!, 4.0, 256.0) != noErr {
+            print("could not set tempo")
+        }
+        
+        
+        // add a track
+        var track: MusicTrack?
+        status = MusicSequenceNewTrack(musicSequence!, &track)
+        if status != noErr {
+            print("error creating track \(status)")
+        }
+        
+      
+        
+        // make some notes and put them on the track
+        var beat: MusicTimeStamp = 0.0
+       
+        for batch in 0..<chords.count {
+            for note: UInt8 in chords[batch] {
+                var mess = MIDINoteMessage(channel: 0,
+                                           note: note,
+                                           velocity: 64,
+                                           releaseVelocity: 0,
+                                           duration: 1.0 )
+                status = MusicTrackNewMIDINoteEvent(track!, beat, &mess)
+                if status != noErr {    print("creating new midi note event \(status)") }
+                
+            }// beat changes after this
+            beat += 1
+        }
+        
+        CAShow(UnsafeMutablePointer<MusicSequence>(musicSequence!))
+        
+    }
+    
     
 }
 
-class MidiPlayer {
+class MidiPlayer: Song {
     var midiPlayer: AVMIDIPlayer?
     var bankURL: URL
-    var song: Song
     
-    init(song: Song) {
+    override init() {
         
         guard let bankURL = Bundle.main.url(forResource: "FluidR3_GM2-2", withExtension: "SF2") else {
-            fatalError("\"Steinway Model L Grand Piano.sf2\" file not found.")
+            fatalError("\"FluidR3_GM2-2.sf2\" file not found.")
         }
         self.bankURL = bankURL
-        self.song = song
     }
     
     func generateMIDIFile(song: Song){
@@ -325,63 +359,18 @@ class MidiPlayer {
     
     func playSong() async {
         if let md = self.midiPlayer {
-            md.currentPosition = 0
-            await md.play()
+            if md.isPlaying {
+                md.stop()
+            } else {
+                md.currentPosition = 0
+                await md.play()
+                
+            }
         }
+        
+        
     }
     
-    func createMusicSequence(chords: [[UInt8]] )  {
-
-        
-        //var musicSequence: MusicSequence?
-        var status = NewMusicSequence(&song.musicSequence)
-        if status != noErr {
-            print(" bad status \(status) creating sequence")
-        }
-        
-        var tempoTrack: MusicTrack?
-        if MusicSequenceGetTempoTrack(song.musicSequence!, &tempoTrack) != noErr {
-            assert(tempoTrack != nil, "Cannot get tempo track")
-        }
-
-        //MusicTrackClear(tempoTrack, 0, 1)
-        if MusicTrackNewExtendedTempoEvent(tempoTrack!, 0.0, 256.0) != noErr {
-            print("could not set tempo")
-        }
-        if MusicTrackNewExtendedTempoEvent(tempoTrack!, 4.0, 256.0) != noErr {
-            print("could not set tempo")
-        }
-        
-        
-        // add a track
-        var track: MusicTrack?
-        status = MusicSequenceNewTrack(song.musicSequence!, &track)
-        if status != noErr {
-            print("error creating track \(status)")
-        }
-        
-      
-        
-        // make some notes and put them on the track
-        var beat: MusicTimeStamp = 0.0
-       
-        for batch in 0..<chords.count {
-            for note: UInt8 in chords[batch] {
-                var mess = MIDINoteMessage(channel: 0,
-                                           note: note,
-                                           velocity: 64,
-                                           releaseVelocity: 0,
-                                           duration: 1.0 )
-                status = MusicTrackNewMIDINoteEvent(track!, beat, &mess)
-                if status != noErr {    print("creating new midi note event \(status)") }
-                
-            }// beat changes after this
-            beat += 1
-        }
-        
-        CAShow(UnsafeMutablePointer<MusicSequence>(song.musicSequence!))
-        
-    }
     
     
 }
@@ -414,7 +403,8 @@ struct ContentView: View {
     @State var uploadButtonIsPresented = false
     @State private var importing = false
     @State private var isLoading = false
-    @StateObject var song = Song()
+    @EnvironmentObject var player: MidiPlayer
+    @EnvironmentObject var song: Song
     
     var body: some View {
         NavigationView{
@@ -454,14 +444,8 @@ struct ContentView: View {
                                             song.generateSong(userSentence: song.sentenceInArray)
                                             song.generated = false
                                         }
-                                        
-                                        song.counter = 0
-                                        song.vowelsInEachWord = []
-                                        song.letterCount = 0
-                                        song.totalVowelCount = 0
-                                        
                                     
-                                    
+                                    player.prepareSong(song: song)
                                         self.enterButtonIsPresented = true
                                     
                                 }
@@ -521,12 +505,8 @@ struct ContentView: View {
                                     else{
                                         song.generateSong(userSentence: song.sentenceInArray)
                                     }
-                                    
-                                    song.counter = 0
-                                    song.vowelsInEachWord = []
-                                    song.letterCount = 0
-                                    song.totalVowelCount = 0
-                                    
+                                   
+                                    player.prepareSong(song: song)
                                     uploadButtonIsPresented = true
                                     
                                 }
