@@ -16,89 +16,61 @@ extension String {
     }
 }
 
-class Pianos {
+public class Piano: NSObject {
     
     let alphabet = ["A","a","B","b","C","c","D","d","E","e","F","f","G","g","H","h","I","i","J","j","K","k","L","l","M","m","N","n","O","o","P","p","Q","q","R","r","S","s","T","t","U","u","V","v","W","w","X","x","Y","y","Z","z"]
     let alphabetPiano: [Character:UInt8] = ["A":33,"a":33,"B":35,"b":35,"C":36,"c":36,"D":38,"d":38,"E":40,"e":40,"F":41,"f":41,"G":43,"g":43,"H":45,"h":45,"I":47,"i":47,"J":48,"j":48,"K":50,"k":50,"L":52,"l":52,"M":53,"m":53,"N":55,"n":55,"O":57,"o":57,"P":59,"p":59,"Q":60,"q":60,"R":62,"r":62,"S":64,"s":64,"T":65,"t":65,"U":67,"u":67,"V":69,"v":69,"W":71,"w":71,"X":72,"x":72,"Y":74,"y":74,"Z":76,"z":76, "!":0,",":0,".":0,"?":0]
-    //let alphabetPiano: [Character:UInt8] = ["A":34,"a":43,"B":37,"b":45,"C":39,"c":47,"D":42,"d":48,"E":44,"e":50,"F":46,"f":52,"G":49,"g":53,"H":51,"h":55,"I":54,"i":57,"J":56,"j":59,"K":58,"k":60,"L":61,"l":62,"M":63,"m":64,"N":66,"n":65,"O":68,"o":67,"P":70,"p":69,"Q":73,"q":71,"R":75,"r":72,"S":78,"s":74,"T":80,"t":76,"U":82,"u":77,"V":85,"v":79,"W":87,"w":81,"X":90,"x":83,"Y":92,"y":84,"Z":94,"z":86, "!":0,",":0,".":0,"?":0]
-    let qwertyPiano = ["A":"Q","a": "q","B":"W","b":"w","C":"E","c":"e","D":"R","d":"r","E":"T","e":"t","F":"Y","f":"y","G":"U","g":"u","H":"I","h":"i","I":"O","i":"o","J":"P","j":"p","K":"A","k":"a","L":"S","l":"s","M":"D","m":"d","N":"F","n":"f","O":"G","o":"g","P":"H","p":"h","Q":"J","q":"j","R":"K","r":"k","S":"L","s":"l","T":"Z","t":"z","U":"X","u":"x","V":"C","v":"c","W":"V","w":"v","X":"B","x":"b","Y":"N","y":"n","Z":"M","z":"m", ",":",", ".":".","!":"!","?":"?", "_":"_"]
-    let backwardPiano = ["A":"Z","a":"z","B":"Y","b":"y","C":"X","c":"x","D":"W","d":"w","E":"V","e":"v","F":"U","f":"u","G":"T","g":"t","H":"S","h":"s","I":"R","i":"r","J":"Q","j":"q","K":"P","k":"p","L":"O","l":"o","M":"N","m":"n","N":"M","n":"m","O":"L","o":"l","P":"K","p":"k","Q":"J","q":"j","R":"I","r":"i","S":"H","s":"h","T":"G","t":"g","U":"F","u":"f","V":"E","v":"e","W":"D","w":"d","X":"C","x":"c","Y":"B","y":"b","Z":"A","z":"a",",":",",".":".","!":"!","?":"?"," ":" ","_":"_"]
-    let halfPiano = ["A":"N","a":"n","B":"O","b":"o","C":"P","c":"p","D":"Q","d":"q","E":"R","e":"r","F":"S","f":"s","G":"T","g":"t","H":"U","h":"u","I":"V","i":"v","J":"W","j":"w","K":"X","k":"x","L":"Y","l":"y","M":"Z","m":"z","N":"A","n":"a","O":"B","o":"b","P":"C","p":"c","Q":"D","q":"d","R":"E","r":"e","S":"F","s":"f","T":"G","t":"g","U":"H","u":"h","V":"I","v":"i","W":"J","w":"j","X":"K","x":"k","Y":"L","y":"l","Z":"M","z":"m",",":",",".":".","!":"!","?":"?"," ":" ","_":"_"]
-    
 }
 
 
-class Song: Pianos, ObservableObject {
+public class Song: Piano, ObservableObject {
     
-    var musicSequence: MusicSequence?
-    var tracks: [Int: MusicTrack] = [:]
     var sentence = ""
     var sentenceInArray: [String] = []
-    var songArray: [URL?] = []
-    var counter: Int = 0
-   
-    var generated = false
+    var chords: [[UInt8]] = [[]]
     
+    private var counter: Int = 0
+    private var tracks: [Int: MusicTrack] = [:]
     
-    override init() {
-        guard NewMusicSequence(&musicSequence) == OSStatus(noErr) else {
-            fatalError("Cannot create MusicSequence")
+    //function to create a random piano alphabet
+    private func randomPiano() -> [String: String]{
+        var randomPiano: [String: String] = [:]
+        var i = 0
+        while i != 52{
+            let temp = Int.random(in: 0..<52)
+            let temporaryKeyLetter = alphabet[i]
+            let temporaryValueLetter = alphabet[temp]
+            
+            if !randomPiano.contains(where: {$0.value == temporaryValueLetter}){
+                randomPiano.updateValue(temporaryValueLetter, forKey: temporaryKeyLetter)
+                i = i + 1
+            }else{
+                //Do Nothing
+            }
         }
+    
+        print(randomPiano)
+        return randomPiano
     }
     
-    
-
+    //function to generate the chords to play in MIDI
     func generateSong(userSentence: [String]) {
         
-        //inputArray = (userSentence.components(separatedBy: " "))
         print(userSentence)
         var vowelsInEachWord: [Int] = []
         var totalVowelCount = 0
         var letterCount = 0
         
-        //count number of times vowels appear in text
         for i in 0..<userSentence.count{
             
-            let temp = userSentence[i]
+            let word = userSentence[i]
             var tempCount = 0
             
-            if temp.contains("A"){
-                tempCount += 1
-            }
-            if temp.contains("a"){
-                tempCount+=1
-            }
-            if temp.contains("E"){
-                tempCount+=1
-            }
-            if temp.contains("e"){
-                tempCount+=1
-            }
-            if temp.contains("I"){
-                tempCount+=1
-            }
-            if temp.contains("i"){
-                tempCount+=1
-            }
-            if temp.contains("O"){
-                tempCount+=1
-            }
-            if temp.contains("o"){
-                tempCount+=1
-            }
-            if temp.contains("U"){
-                tempCount+=1
-            }
-            if temp.contains("u"){
-                tempCount+=1
-            }
-            if temp.contains("Y"){
-                tempCount+=1
-            }
-            if temp.contains("y"){
-                tempCount+=1
-            }
-            
+            for j in 0..<word.count{
+                if word[j] == "A" || word[j] == "a" || word[j] == "E" || word[j] == "e" || word[j] == "I" || word[j] == "i" || word[j] == "O" || word[j] == "o" || word[j] == "U" || word[j] == "u" || word[j] == "Y" || word[j] == "y"{
+                    tempCount+=1
+                }}
+           
             vowelsInEachWord.append(tempCount)
         }
         
@@ -110,17 +82,16 @@ class Song: Pianos, ObservableObject {
         
         print("This is the total number of vowels: ", totalVowelCount)
         
-        //number of words in text
         var numberOfWords = userSentence.count
         if userSentence.last == "" {
             numberOfWords = numberOfWords - 1
         }
         
         print("This is the number of words: ", numberOfWords)
-       
+        
         var inputInCharacters: [Character] = []
         
-        //create song structure based on chosen letters
+        //remove punctuation
         for i in 0..<userSentence.count{
             
             let temp = userSentence[i]
@@ -134,191 +105,91 @@ class Song: Pianos, ObservableObject {
         
         print(inputInCharacters)
         
-        //combine input into one string
         var song = String(inputInCharacters)
         
-        //count number of letters in song structure
-        for mChar in inputInCharacters{
-            if mChar != "," && mChar != "." && mChar != "?" && mChar != "!" && mChar != "’"{
-                letterCount+=1
-            }
-        }
+        letterCount = inputInCharacters.count
         
         var removeCount = letterCount - numberOfWords
         
         print("This is the song before removing letters: ", song)
         print("This is how many letters are being removed: ", removeCount)
         
-        //make song structure equal to number of vowels
+        //make song string equal to number of words
         while(removeCount != 0){
-            
-            if song.last! != "," && song.last! != "." && song.last! != "?" && song.last! != "!" && song.last! != "’"{
                 song.removeLast()
                 removeCount-=1
-            }
-            else{
-                song.removeLast()
-            }
-            
         }
         
         print("This is the final song: ", song)
-        var qwertySong = String()
-        var backwardSong = String()
-        var halfSong = String()
         
-        for i in 0...song.count - 1{
+        var randomizedPiano = randomPiano()
+        var fullSong = createSongString(originalSong: song, randomizedPiano: randomizedPiano, vowelsInEachWord: vowelsInEachWord, numberOfVowels: 0)
+        randomizedPiano = randomPiano()
+        var over1VowelSong = createSongString(originalSong: song, randomizedPiano: randomizedPiano, vowelsInEachWord: vowelsInEachWord, numberOfVowels: 1)
+        randomizedPiano = randomPiano()
+        var over2VowelsSong = createSongString(originalSong: song, randomizedPiano: randomizedPiano, vowelsInEachWord: vowelsInEachWord, numberOfVowels: 2)
+        randomizedPiano = randomPiano()
+        var over3VowelsSong = createSongString(originalSong: song, randomizedPiano: randomizedPiano, vowelsInEachWord: vowelsInEachWord, numberOfVowels: 3)
+        randomizedPiano = randomPiano()
+        var over4VowelsSong = createSongString(originalSong: song, randomizedPiano: randomizedPiano, vowelsInEachWord: vowelsInEachWord, numberOfVowels: 4)
+        
+        print(fullSong)
+        print(over1VowelSong)
+        print(over2VowelsSong)
+        print(over3VowelsSong)
+        print(over4VowelsSong)
+        
+        chords = [[UInt8]](repeating: [UInt8](repeating: 0, count: 0), count: fullSong.count)
+        print(chords)
+        
+        for i in 0..<fullSong.count{
             
-            let mCharArray = Array(song)
+            if alphabet.contains(String(fullSong[i])){
+                chords[i].append(alphabetPiano[fullSong[i]]!)
+            }
+            if alphabet.contains(String(over1VowelSong[i])){
+                chords[i].append(alphabetPiano[over1VowelSong[i]]!)
+            }
+            if alphabet.contains(String(over2VowelsSong[i])){
+                chords[i].append(alphabetPiano[over2VowelsSong[i]]!)
+            }
+            if alphabet.contains(String(over3VowelsSong[i])){
+                chords[i].append(alphabetPiano[over3VowelsSong[i]]!)
+            }
+            if alphabet.contains(String(over4VowelsSong[i])){
+                chords[i].append(alphabetPiano[over4VowelsSong[i]]!)
+            }
+        }
+        
+        print(chords)
+    }
+    
+    private func createSongString(originalSong: String, randomizedPiano: [String:String], vowelsInEachWord: [Int], numberOfVowels: Int) -> String{
+        var countingVowelsSong = String()
+        
+        for i in 0...originalSong.count - 1{
+            
+            let mCharArray = Array(originalSong)
             let mChar = mCharArray[i]
             
-            if qwertyPiano[String(mChar)] != nil{
-                qwertySong.append(qwertyPiano[String(mChar)]!)
-            }
-            else{}
-            
-            if backwardPiano[String(mChar)] != nil{
-                if vowelsInEachWord[i] > 1{
-                    backwardSong.append(backwardPiano[String(mChar)]!)
+            if randomizedPiano[String(mChar)] != nil{
+                if vowelsInEachWord[i] > numberOfVowels{
+                    countingVowelsSong.append(randomizedPiano[String(mChar)]!)
                 }
                 else{
-                    backwardSong.append("_")
+                    countingVowelsSong.append("_")
                 }
             }
-            else{}
-            
-            if halfPiano[String(mChar)] != nil{
-                if vowelsInEachWord[i] > 2{
-                    halfSong.append(halfPiano[String(mChar)]!)
-                }
-                else{
-                    halfSong.append("_")
-                }
-            }
-            else{}
         }
         
-        print(qwertySong)
-        print(backwardSong)
-        print(halfSong)
-        
-        var chords = [[UInt8]](repeating: [UInt8](repeating: 0, count: 0), count: qwertySong.count)
-        print(chords)
-        
-        for i in 0..<qwertySong.count{
-            
-            if qwertySong[i] != "!" && qwertySong[i] != "?" && qwertySong[i] != "." && qwertySong[i] != ","{
-                chords[i].append(alphabetPiano[qwertySong[i]]!)
-            }
-            if backwardSong[i] != "_" && backwardSong[i] != "!" && backwardSong[i] != "?" && backwardSong[i] != "." && backwardSong[i] != ","{
-                chords[i].append(alphabetPiano[backwardSong[i]]!)
-            }
-            if halfSong[i] != "_" && halfSong[i] != "!" && halfSong[i] != "?" && halfSong[i] != "." && halfSong[i] != ","{
-                chords[i].append(alphabetPiano[halfSong[i]]!)
-            }
-        }
-        
-        print(chords)
-        
-        createMusicSequence(chords: chords)
+        return countingVowelsSong
     }
-    
-    //after user upload, generate song
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-       
-        self.handleFileSelection(inUrl: urls.first!)
-        
-    }
-
-    private func handleFileSelection(inUrl:URL) -> Void {
-        
-        var text = String()
-        
-        do {
-         // inUrl is the document's URL
-            let data = try Data(contentsOf: inUrl)
-        } catch {
-            print("document loading error")
-        }
-        
-        //extract text from PDF
-        if let pdf = PDFDocument(url: inUrl) {
-            let pageCount = pdf.pageCount
-            let documentContent = NSMutableAttributedString()
-
-            for i in 0 ..< pageCount {
-                guard let page = pdf.page(at: i) else { continue }
-                guard let pageContent = page.attributedString else { continue }
-                documentContent.append(pageContent)
-            }
-            
-            text = documentContent.string //convert text to string
-        }
-        
-        sentenceInArray = text.components(separatedBy: " ")
-        generateSong(userSentence: sentenceInArray)
-        print(text)
-    }
-    
-    func createMusicSequence(chords: [[UInt8]] )  {
-
-        
-        //var musicSequence: MusicSequence?
-        var status = NewMusicSequence(&musicSequence)
-        if status != noErr {
-            print(" bad status \(status) creating sequence")
-        }
-        
-        var tempoTrack: MusicTrack?
-        if MusicSequenceGetTempoTrack(musicSequence!, &tempoTrack) != noErr {
-            assert(tempoTrack != nil, "Cannot get tempo track")
-        }
-
-        //MusicTrackClear(tempoTrack, 0, 1)
-        if MusicTrackNewExtendedTempoEvent(tempoTrack!, 0.0, 256.0) != noErr {
-            print("could not set tempo")
-        }
-        if MusicTrackNewExtendedTempoEvent(tempoTrack!, 4.0, 256.0) != noErr {
-            print("could not set tempo")
-        }
-        
-        
-        // add a track
-        var track: MusicTrack?
-        status = MusicSequenceNewTrack(musicSequence!, &track)
-        if status != noErr {
-            print("error creating track \(status)")
-        }
-        
-      
-        
-        // make some notes and put them on the track
-        var beat: MusicTimeStamp = 0.0
-       
-        for batch in 0..<chords.count {
-            for note: UInt8 in chords[batch] {
-                var mess = MIDINoteMessage(channel: 0,
-                                           note: note,
-                                           velocity: 64,
-                                           releaseVelocity: 0,
-                                           duration: 1.0 )
-                status = MusicTrackNewMIDINoteEvent(track!, beat, &mess)
-                if status != noErr {    print("creating new midi note event \(status)") }
-                
-            }// beat changes after this
-            beat += 1
-        }
-        
-        CAShow(UnsafeMutablePointer<MusicSequence>(musicSequence!))
-        
-    }
-    
-    
 }
 
 class MidiPlayer: Song {
-    var midiPlayer: AVMIDIPlayer?
-    var bankURL: URL
+    @Published var musicSequence: MusicSequence?
+    @Published var midiPlayer: AVMIDIPlayer?
+    @Published var bankURL: URL
     
     override init() {
         
@@ -326,22 +197,15 @@ class MidiPlayer: Song {
             fatalError("\"FluidR3_GM2-2.sf2\" file not found.")
         }
         self.bankURL = bankURL
-    }
-    
-    func generateMIDIFile(song: Song){
-                
-        var documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as NSURL
-        let qwertyURL = documentDirectoryURL.appendingPathComponent("mySong.m4a")
-        
-        guard MusicSequenceFileCreate(song.musicSequence!, qwertyURL! as CFURL, MusicSequenceFileTypeID.midiType, MusicSequenceFileFlags.eraseFile, 0) == OSStatus(noErr) else{
-            fatalError("Cannot create midi file")
+        super.init()
+        guard NewMusicSequence(&musicSequence) == OSStatus(noErr) else {
+            fatalError("Cannot create MusicSequence")
         }
-        
     }
     
-    func prepareSong(song: Song){
+    func prepareSong(musicSequence: MusicSequence){
         var data: Unmanaged<CFData>?
-        guard MusicSequenceFileCreateData(song.musicSequence!, MusicSequenceFileTypeID.midiType, MusicSequenceFileFlags.eraseFile, 480, &data) == OSStatus(noErr) else {
+        guard MusicSequenceFileCreateData(musicSequence, MusicSequenceFileTypeID.midiType, MusicSequenceFileFlags.eraseFile, 480, &data) == OSStatus(noErr) else {
             fatalError("Cannot create music midi data")
         }
         
@@ -357,6 +221,55 @@ class MidiPlayer: Song {
         self.midiPlayer!.prepareToPlay()
     }
     
+    //function to create MIDI music sequence out of chords generated
+    func createMusicSequence(chords: [[UInt8]] )  {
+
+        var status = NewMusicSequence(&musicSequence)
+        if status != noErr {
+            print(" bad status \(status) creating sequence")
+        }
+        
+        var tempoTrack: MusicTrack?
+        if MusicSequenceGetTempoTrack(musicSequence!, &tempoTrack) != noErr {
+            assert(tempoTrack != nil, "Cannot get tempo track")
+        }
+
+        if MusicTrackNewExtendedTempoEvent(tempoTrack!, 0.0, 256.0) != noErr {
+            print("could not set tempo")
+        }
+        if MusicTrackNewExtendedTempoEvent(tempoTrack!, 4.0, 256.0) != noErr {
+            print("could not set tempo")
+        }
+        
+        
+        // add a track
+        var track: MusicTrack?
+        status = MusicSequenceNewTrack(musicSequence!, &track)
+        if status != noErr {
+            print("error creating track \(status)")
+        }
+        
+        // make some notes and put them on the track
+        var beat: MusicTimeStamp = 0.0
+       
+        for batch in 0..<chords.count {
+            for note: UInt8 in chords[batch] {
+                var mess = MIDINoteMessage(channel: 0,
+                                           note: note,
+                                           velocity: 64,
+                                           releaseVelocity: 0,
+                                           duration: 1.0 )
+                status = MusicTrackNewMIDINoteEvent(track!, beat, &mess)
+                if status != noErr {    print("creating new midi note event \(status)") }
+                
+            }
+            beat += 1
+        }
+        
+        CAShow(UnsafeMutablePointer<MusicSequence>(musicSequence!))
+        
+    }
+    
     func playSong() async {
         if let md = self.midiPlayer {
             if md.isPlaying {
@@ -367,11 +280,18 @@ class MidiPlayer: Song {
                 
             }
         }
-        
-        
     }
     
-    
+    private func generateMIDIFile(musicSequence: MusicSequence) {
+                
+        let documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as NSURL
+        let qwertyURL = documentDirectoryURL.appendingPathComponent("mySong.m4a")
+        
+        guard MusicSequenceFileCreate(musicSequence, qwertyURL! as CFURL, MusicSequenceFileTypeID.midiType, MusicSequenceFileFlags.eraseFile, 0) == OSStatus(noErr) else{
+            fatalError("Cannot create midi file")
+        }
+        
+    }
     
 }
 
@@ -381,156 +301,228 @@ extension UIApplication {
     }
 }
 
-
-
 struct ContentView: View {
+   
+    @Environment(\.managedObjectContext) private var moc
+    @FetchRequest(sortDescriptors: []) private var userSongs: FetchedResults<UserSong>
     
-    struct OvalTextFieldStyle: TextFieldStyle {
-        func _body(configuration: TextField<Self._Label>) -> some View {
-            configuration
-                .padding(10)
-                .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color.white]), startPoint: .topLeading, endPoint: .bottomTrailing))
-                .cornerRadius(20)
-                .shadow(color: .gray, radius: 10)
+    @State private var userText = ""
+    @State private var showAlert = false
+    @State private var enterButtonIsPresented = false
+    @State private var uploadButtonIsPresented = false
+    @State private var importing = false
+    @State private var isLoading = false
+    
+    @ObservedObject var player: MidiPlayer
+    @ObservedObject var detailViewPlayer: MidiPlayer
+    
+    @EnvironmentObject var song: Song
+    
+    private let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pdf], asCopy: true)
+    
+    var body: some View {
+        TabView{
+            NavigationView{
+                ZStack{
+                    Color.yellow
+                        .ignoresSafeArea()
+                    VStack{
+                        HStack{
+                            Image("ostrich logo-02")
+                                .resizable()
+                                .frame(width: 300, height: 300)
+                                .aspectRatio(contentMode: .fill)
+                        }
+                        userTextField
+                        Spacer()
+                        Text("or")
+                            .font(.system(size: 50))
+                            .frame(width: 100, height: 100)
+                        Spacer()
+                        Text("Upload File(PDF): ")
+                        Spacer()
+                        uploadPDFButton
+                        Spacer()
+                    }
+                    if isLoading{
+                        LoadingView()
+                    }
+                }
+                .onDisappear(){
+                    isLoading = false
+                }
+                .onTapGesture {
+                    UIApplication.shared.endEditing()
+                }
+                
+            }
+            .tabItem {
+                Image(systemName: "house.fill")
+            }
+            .navigationViewStyle(.stack)
+            savedSongsView
+                .tabItem { Image(systemName: "list.bullet") }
         }
     }
     
-   
-    let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pdf], asCopy: true)
-    @State var userText = ""
-    @State var showAlert = false
-    @State var enterButtonIsPresented = false
-    @State var uploadButtonIsPresented = false
-    @State private var importing = false
-    @State private var isLoading = false
-    @EnvironmentObject var player: MidiPlayer
-    @EnvironmentObject var song: Song
+    private var userTextField: some View{
+        HStack{
+            Spacer()
+            TextField("Enter a Sentence", text: $userText)
+                .padding()
+                .textFieldStyle(OvalTextFieldStyle())
+                .submitLabel(.done)
+            NavigationLink(destination: SongView(player: player), isActive: $enterButtonIsPresented){
+                Image(systemName: "arrow.right.circle").renderingMode(.original)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 30, height: 30)
+                    .accentColor(.black)
+                    .padding()
+                    .onTapGesture {
+                        isLoading = true
+                        song.sentence = userText
+                        song.sentenceInArray = userText.components(separatedBy: " ")
+                        
+                        isUnder2000Words(song: song)
+                        enterButtonIsPresented = true
+                    }
+            }
+            .disabled(userText.isEmpty)
+            
+        }.alert(isPresented: $showAlert) {
+            Alert(
+                title: Text("Text is Too Long"),
+                message: Text("Please enter a shorter text")
+            )
+        }
+    }
     
-    var body: some View {
+    private var uploadPDFButton: some View{
+        HStack{
+            NavigationLink(destination: SongView(player: player), isActive: $uploadButtonIsPresented){
+                Image(systemName: "square.and.arrow.up")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 50, height: 50)
+                    .accentColor(.black)
+                    .padding()
+                    .onTapGesture {
+                        importing = true
+                    }
+            }
+            .fileImporter(isPresented: $importing, allowedContentTypes: [.pdf]) { (res) in
+                isLoading = true
+                do{
+                    let fileUrl = try res.get()
+                    print(fileUrl)
+                    
+                    readPDF(fileUrl: fileUrl)
+                    isUnder2000Words(song: song)
+                    uploadButtonIsPresented = true
+                }
+                catch {
+                    print("document loading error")
+                }
+                
+            }
+        }.alert(isPresented: $showAlert) {
+            Alert(
+                title: Text("Text is Too Long"),
+                message: Text("Please enter a shorter text")
+            )
+        }
+    }
+    
+    private var savedSongsView: some View{
         NavigationView{
-            ZStack{
-                Color.yellow
-                    .ignoresSafeArea()
-                VStack{
-                    HStack{
-                        Image("ostrich logo-02")
-                            .resizable()
-                            .frame(width: 300, height: 300)
-                            .aspectRatio(contentMode: .fill)
-                    }
-                    HStack{
-                        Spacer()
-                        TextField("Enter a Sentence", text: $userText)
-                            .padding()
-                            .textFieldStyle(OvalTextFieldStyle())
-                            .submitLabel(.done)
-                        NavigationLink(destination: SongView(), isActive: $enterButtonIsPresented){
-                            Image(systemName: "arrowshape.right.circle")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 30, height: 30)
-                                .accentColor(.black)
-                                .padding()
-                                .onTapGesture {
-                                    isLoading = true
-                                        //song.sentence = userText
-                                        song.sentenceInArray = userText.components(separatedBy: " ")
-                                        //song.sentenceInArray.removeLast()
-                                        
-                                        if song.sentenceInArray.count > 2000{
-                                            showAlert = true
-                                        }
-                                        else{
-                                            song.generateSong(userSentence: song.sentenceInArray)
-                                            song.generated = false
-                                        }
-                                    
-                                    player.prepareSong(song: song)
-                                        self.enterButtonIsPresented = true
-                                    
-                                }
+                if #available(iOS 16.0, *) {
+                    List{
+                        ForEach(userSongs, id: \.name){ userSong in
+                            NavigationLink{
+                                DetailView(detailViewPlayer: detailViewPlayer, userSong: userSong)
+                            } label: {
+                                Text(userSong.name ?? "mySong")
+                            }
                         }
-                        .disabled(userText.isEmpty)
-                        
-                    }.alert(isPresented: $showAlert) {
-                        Alert(
-                            title: Text("Text is Too Long"),
-                            message: Text("Please enter a shorter text")
-                        )
+                        .onDelete(perform: delete)
                     }
-                    Spacer()
-                    Text("or")
-                        .font(.system(size: 50))
-                        .frame(width: 100, height: 100)
-                    Spacer()
-                    Text("Upload File(PDF): ")
-                    Spacer()
-                    NavigationLink(destination: SongView(), isActive: $uploadButtonIsPresented){
-                        Image(systemName: "doc.badge.arrow.up.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 50, height: 50)
-                            .accentColor(.black)
-                            .padding()
-                            .onTapGesture {
-                                importing = true
+                    .navigationTitle("My Songs")
+                    .navigationBarItems(leading: EditButton())
+                    .scrollContentBackground(.hidden)
+                    .background(Color.yellow)
+                    .overlay(Group {
+                        if(userSongs.count == 0) {
+                            ZStack() {
+                                Color.yellow.ignoresSafeArea()
                             }
-                    }
-                    .fileImporter(isPresented: $importing, allowedContentTypes: [.pdf]) { (res) in
-                            isLoading = true
-                            do{
-                                let fileUrl = try res.get()
-                                print(fileUrl)
-                                
-                                guard fileUrl.startAccessingSecurityScopedResource() else { return }
-                                let contents = try  Data(contentsOf: fileUrl)
-                                
-                                //extract text from PDF
-                                if let pdf = PDFDocument(url: fileUrl) {
-                                    let pageCount = pdf.pageCount
-                                    let documentContent = NSMutableAttributedString()
-                                    
-                                    for i in 0 ..< pageCount {
-                                        guard let page = pdf.page(at: i) else { continue }
-                                        guard let pageContent = page.attributedString else { continue }
-                                        documentContent.append(pageContent)
-                                    }
-                                    
-                                    song.sentence = documentContent.string //convert text to string
-                                    
-                                    song.sentenceInArray = song.sentence.components(separatedBy: " ")
-                                    if song.sentenceInArray.count > 2000{
-                                        showAlert = true
-                                    }
-                                    else{
-                                        song.generateSong(userSentence: song.sentenceInArray)
-                                    }
-                                   
-                                    player.prepareSong(song: song)
-                                    uploadButtonIsPresented = true
-                                    
-                                }
-                            }
-                            catch {
-                                print("document loading error")
-                            }
-                        
-                    }
-                    Spacer()
+                        }
+                    })
                 }
-                if isLoading{
-                    LoadingView()
+                else {
+                    // Fallback on earlier versions
+                    List{
+                        ForEach(userSongs){ userSong in
+                            Text(userSong.name ?? "mySong")
+                        }
+                        .onDelete(perform: delete)
+                    }
+                    .navigationTitle("My Songs")
+                    .navigationBarItems(leading: EditButton())
+                    .background(Color.yellow)
+                    .overlay(Group {
+                        if(userSongs.count == 0) {
+                            ZStack() {
+                                Color.yellow.ignoresSafeArea()
+                            }
+                        }
+                    })
                 }
-            }
-            .onDisappear(){
-                isLoading = false
-            }
-            .onTapGesture {
-                UIApplication.shared.endEditing()
+        }
+    }
+    
+    private func readPDF(fileUrl: URL){
+        
+        guard fileUrl.startAccessingSecurityScopedResource() else { return }
+        
+        //extract text from PDF
+        if let pdf = PDFDocument(url: fileUrl) {
+            let pageCount = pdf.pageCount
+            let documentContent = NSMutableAttributedString()
+            
+            for i in 0 ..< pageCount {
+                guard let page = pdf.page(at: i) else { continue }
+                guard let pageContent = page.attributedString else { continue }
+                documentContent.append(pageContent)
             }
             
+            song.sentence = documentContent.string
+            
+            song.sentenceInArray = song.sentence.components(separatedBy: " ")
+            
         }
-        .navigationViewStyle(.stack)
+    }
+    
+    private func isUnder2000Words(song: Song){
+        if song.sentenceInArray.count > 2000{
+            isLoading = false
+            showAlert = true
+        }
+        else{
+            song.generateSong(userSentence: song.sentenceInArray)
+                
+            player.createMusicSequence(chords: song.chords)
+            player.prepareSong(musicSequence: player.musicSequence!)
+        }
+    }
+    
+    func delete(at offsets: IndexSet){
+        for offset in offsets{
+            let userSong = userSongs[offset]
+            moc.delete(userSong)
+        }
+        
+        try? moc.save()
     }
 }
 
@@ -547,9 +539,21 @@ struct LoadingView: View{
     }
 }
 
+struct OvalTextFieldStyle: TextFieldStyle {
+    func _body(configuration: TextField<Self._Label>) -> some View {
+        configuration
+            .padding(10)
+            .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color.white]), startPoint: .topLeading, endPoint: .bottomTrailing))
+            .cornerRadius(20)
+            .shadow(color: .gray, radius: 10)
+    }
+}
 
 
 
+/*
 #Preview {
     ContentView()
+        .environmentObject(Song())
 }
+*/

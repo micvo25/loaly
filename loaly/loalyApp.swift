@@ -10,14 +10,16 @@ import SwiftUI
 @main
 struct loalyApp: App {
     
+    @StateObject private var dataController = DataController()
     @StateObject var song = Song()
-    @StateObject var player = MidiPlayer()
+    @ObservedObject var player = MidiPlayer()
+    @ObservedObject var detailViewPlayer = MidiPlayer()
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(player: player, detailViewPlayer: detailViewPlayer)
+                .environment(\.managedObjectContext, dataController.container.viewContext)
                 .environmentObject(song)
-                .environmentObject(player)
         }
     }
 }

@@ -1,28 +1,19 @@
 //
-//  SongView.swift
+//  DetailSongView.swift
 //  loaly
 //
-//  Created by Salvatore D'Armetta on 1/23/24.
+//  Created by Salvatore D'Armetta on 7/22/24.
 //
-
 import SwiftUI
 import AVFoundation
 
-
-struct ActivityViewController: UIViewControllerRepresentable {
-    let itemsToShare: URL
-
-    func makeUIViewController(context: UIViewControllerRepresentableContext<ActivityViewController>) -> UIActivityViewController {
-        return UIActivityViewController(activityItems: [itemsToShare], applicationActivities: nil)
-    }
-
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: UIViewControllerRepresentableContext<ActivityViewController>) {}
-}
-
-struct SongView: View {
+struct DetailSongView: View {
     
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var song: Song
-    @ObservedObject var player: MidiPlayer
+    
+    @ObservedObject var detailViewPlayer: MidiPlayer
+    
     @State private var showingExporter = false
     @State private var timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     @State private var showShareSheet = false
@@ -30,35 +21,39 @@ struct SongView: View {
     @State private var currentTime: TimeInterval = 0.0
     @State private var showingAddScreen = false
     
+    let userSong: UserSong
+    
     var body: some View {
         ZStack{
                    Color.yellow
                        .ignoresSafeArea()
-                   songPlayer
+                       .navigationBarBackButtonHidden()
+                       .toolbar{
+                           ToolbarItem(placement: .navigationBarLeading, content: {
+                               Button{
+                                   detailViewPlayer.midiPlayer?.stop()
+                                   dismiss()
+                               } label: {
+                                   HStack{
+                                       Image(systemName: "chevron.backward")
+                                   }
+                               }
+                           })
+                       }
+                   detailSongPlayer
+            
         }
         .onAppear(perform: setupAudio)
         .onReceive(Timer.publish(every: 0.1, on: .main, in: .common).autoconnect())  { _ in
             updateProgress()
         }
         .onDisappear(){
-            player.midiPlayer?.stop()
-        }
-        .toolbar{
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button{
-                    showingAddScreen.toggle()
-                }
-                label:{
-                    Label("Add Song", systemImage: "plus")
-                }
-            }
-        }
-        .sheet(isPresented: $showingAddScreen) {
-            SaveSongView()
+            detailViewPlayer.midiPlayer?.stop()
+            print("ON DISAPPEAR ACTIVATED")
         }
     }
     
-    private var songPlayer: some View{
+    private var detailSongPlayer: some View{
         VStack(spacing: 10){
             HStack{
                 Image("ostrich logo-02")
@@ -74,11 +69,11 @@ struct SongView: View {
                         print(error.localizedDescription)
                     }
                     Task{
-                         await player.playSong()
+                         await detailViewPlayer.playSong()
                     }
                     
                 }, label: {
-                    Image(systemName: player.midiPlayer?.isPlaying ?? false ? "pause.fill" : "play.fill")
+                    Image(systemName: detailViewPlayer.midiPlayer?.isPlaying ?? false ? "pause.fill" : "play.fill")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 25, height: 25)
@@ -117,19 +112,18 @@ struct SongView: View {
             })
             Spacer()
         }
- 
     }
     
     private func setupAudio() {
-        totalTime = player.midiPlayer?.duration ?? 0.0
+        totalTime = detailViewPlayer.midiPlayer?.duration ?? 0.0
     }
     
     private func updateProgress(){
-        currentTime = player.midiPlayer?.currentPosition ?? 0
+        currentTime = detailViewPlayer.midiPlayer?.currentPosition ?? 0
     }
     
     private func seekAudio(to time: TimeInterval){
-        player.midiPlayer?.currentPosition = time
+        detailViewPlayer.midiPlayer?.currentPosition = time
     }
     
     private func timeString(time: TimeInterval) -> String{
@@ -139,20 +133,18 @@ struct SongView: View {
         return String(format: "%02d:%02d", minutes, seconds)
     }
     
-    private func getComposition() -> URL {
+    func getComposition() -> URL {
         let documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as NSURL
         let songURL = documentDirectoryURL.appendingPathComponent("mySong.mid")
         
-        guard MusicSequenceFileCreate(player.musicSequence!, songURL! as CFURL, MusicSequenceFileTypeID.midiType, MusicSequenceFileFlags.eraseFile, 0) == OSStatus(noErr) else{
+        guard MusicSequenceFileCreate(detailViewPlayer.musicSequence!, songURL! as CFURL, MusicSequenceFileTypeID.midiType, MusicSequenceFileFlags.eraseFile, 0) == OSStatus(noErr) else{
             fatalError("Cannot create midi file")
         }
         return songURL!
     }
 }
-
 /*
-       #Preview {
-           SongView()
-               .environmentObject(Song())
-       }
-*/
+ #Preview {
+ DetailSongView()
+ }
+ */

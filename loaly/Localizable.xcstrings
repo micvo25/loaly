@@ -1,6 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@" : {
+
+    },
+    "Add Song" : {
+
+    },
     "Enter a Sentence" : {
       "localizations" : {
         "it" : {
@@ -10,6 +16,12 @@
           }
         }
       }
+    },
+    "My Songs" : {
+
+    },
+    "Name of Song" : {
+
     },
     "or" : {
       "localizations" : {
@@ -21,6 +33,9 @@
         }
       }
     },
+    "Play Song" : {
+
+    },
     "Please enter a shorter text" : {
       "localizations" : {
         "it" : {
@@ -30,6 +45,9 @@
           }
         }
       }
+    },
+    "Save" : {
+
     },
     "Text is Too Long" : {
       "localizations" : {
