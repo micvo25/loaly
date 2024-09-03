@@ -7,6 +7,6 @@
 
 ## Features
 
-* Convert prompt or text in a PDF to a song.
+* Convert prompt or text in a PDF into a song.
 * Download or share your song, a MIDI music sequence, that can be used in applications like garageband with other instruments.
 * Save your songs in the app for later use. 
